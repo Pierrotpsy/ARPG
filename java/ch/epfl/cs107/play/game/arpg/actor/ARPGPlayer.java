@@ -20,6 +20,7 @@ import ch.epfl.cs107.play.window.Canvas;
 import ch.epfl.cs107.play.window.Keyboard;
 
 public class ARPGPlayer extends Player {
+	
 	private float hp;
 	private TextGraphics message;
 	private Sprite sprite;
