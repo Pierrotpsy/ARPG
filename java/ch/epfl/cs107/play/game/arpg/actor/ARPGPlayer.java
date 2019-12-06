@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
+import ch.epfl.cs107.play.game.areagame.actor.Interactable;
 import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
@@ -150,5 +151,28 @@ public class ARPGPlayer extends Player {
 
 	@Override
 	public void acceptInteraction(AreaInteractionVisitor v) {
+	}
+
+	@Override
+	public List<DiscreteCoordinates> getFieldOfViewCells() {
+		return Collections.singletonList (getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
+	}
+
+	@Override
+	public boolean wantsCellInteraction() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean wantsViewInteraction() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void interactWith(Interactable other) {
+		// TODO Auto-generated method stub
+		
 	}
 }
