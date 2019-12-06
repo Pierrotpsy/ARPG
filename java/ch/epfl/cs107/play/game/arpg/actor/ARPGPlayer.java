@@ -7,16 +7,19 @@ import java.util.List;
 
 import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
+import ch.epfl.cs107.play.game.areagame.actor.Animation;
 import ch.epfl.cs107.play.game.areagame.actor.Interactable;
 import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
+import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
+import ch.epfl.cs107.play.math.RegionOfInterest;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
@@ -25,11 +28,17 @@ import ch.epfl.cs107.play.window.Keyboard;
 public class ARPGPlayer extends Player {
 	
 	private float hp;
+	private int i;
 	private TextGraphics message;
 	private Sprite sprite;
 	private boolean isPassingADoor;
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
+    
+    Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
+
+    Animation[] animations = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
+    
 	/**
 	 * Demo actor
 	 * 
@@ -40,7 +49,7 @@ public class ARPGPlayer extends Player {
 		message = new TextGraphics(Integer.toString((int)hp), 0.4f, Color.BLUE);
 		message.setParent(this);
 		message.setAnchor(new Vector(-0.3f, 0.1f));
-		sprite = new Sprite("ghost.1", 1.f, 1.f,this);
+		sprite = sprites[0][0];
 
 		resetMotion();
 	}
@@ -57,7 +66,33 @@ public class ARPGPlayer extends Player {
 	        moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
 	        moveOrientate(Orientation.RIGHT, keyboard.get(Keyboard.RIGHT));
 	        moveOrientate(Orientation.DOWN, keyboard.get(Keyboard.DOWN));
-	            
+	        
+	        
+	        switch(getOrientation()) {
+	        	case LEFT :
+	        		i = 3;
+	        		break;
+	        		
+	        	case RIGHT :
+	        		i =1;
+	        		break;
+	        		
+	        	case UP :
+	        		i = 0;
+	        		break;
+	        		
+	        	case DOWN :
+	        		i = 2;
+	        		break;
+	        		
+	        	default :
+	        		i = 2;
+	        }
+	        
+	        if (isDisplacementOccurs()) {
+		        animations[i].update(deltaTime);
+	        } else animations[i].reset();
+	        
 	        super.update(deltaTime);
 	        
 	        //List<DiscreteCoordinates> coords = getEnteredCells();
@@ -118,7 +153,7 @@ public class ARPGPlayer extends Player {
     
 	@Override
 	public void draw(Canvas canvas) {
-		sprite.draw(canvas);	
+		animations[i].draw(canvas);	
 		message.draw(canvas);
 	}
 

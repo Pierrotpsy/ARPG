@@ -62,7 +62,7 @@ public abstract class AreaEntity extends Entity implements Interactable {
     public Orientation getOrientation() {
         return orientation;
     }
-
+    
     /**
      * Orientate the AreaEntity to a new orientation
      * @param orientation (Orientation): The new orientation. Not null
@@ -72,7 +72,7 @@ public abstract class AreaEntity extends Entity implements Interactable {
         this.orientation = orientation;
         return true;
     }
-
+    
     /**
      * Getter for the coordinates of the main cell occupied by the AreaEntity
      * @return (DiscreteCoordinates)
