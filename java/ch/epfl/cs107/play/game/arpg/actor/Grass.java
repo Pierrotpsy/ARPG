@@ -8,7 +8,7 @@ import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.AreaEntity;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
-import ch.epfl.cs107.play.game.arpg.ARPGBehavior.*;
+import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.RegionOfInterest;
@@ -16,11 +16,12 @@ import ch.epfl.cs107.play.window.Canvas;
 
 public class Grass extends AreaEntity {
 
-	private RPGSprite sprite = new RPGSprite("zelda/grass", 1, 2, this, new RegionOfInterest(0, 0, 16, 16));
+	private RPGSprite sprite = new RPGSprite("zelda/grass", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
 	
-	public Grass(Area area, Orientation orientation, DiscreteCoordinates position) {
-		super(area, orientation, position);
+	public Grass(Area area, DiscreteCoordinates position) {
+		super(area, Orientation.UP, position);
 	}
+	
 	@Override
 	public List<DiscreteCoordinates> getCurrentCells() {
 		return Collections.singletonList(getCurrentMainCellCoordinates());
@@ -28,32 +29,28 @@ public class Grass extends AreaEntity {
 
 	@Override
 	public boolean takeCellSpace() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCellInteractable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isViewInteractable() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public void acceptInteraction(AreaInteractionVisitor v) {
-		// TODO Auto-generated method stub
-		
-	}
+        ((ARPGInteractionVisitor)v).interactWith(this);
+    }
 
 	@Override
 	public void draw(Canvas canvas) {
-		// TODO Auto-generated method stub
-		
+		sprite.draw(canvas);
 	}
 
 }

@@ -14,8 +14,7 @@ public class ARPGBehavior extends AreaBehavior {
 		IMPASSABLE(-8750470, false),
 		INTERACT(-256, true),
 		DOOR(-195580, true),
-		WALKABLE(-1, true),
-		GRASS(32768, false),;
+		WALKABLE(-1, true),;
 
 		final int type;
 		final boolean isWalkable;
@@ -31,13 +30,13 @@ public class ARPGBehavior extends AreaBehavior {
 					return ict;
 			}
 			// When you add a new color, you can print the int value here before assign it to a type
-			System.out.println(type);
+			//System.out.println(type);
 			return NULL;
 		}
 	}
 
 	/**
-	 * Default Tuto2Behavior Constructor
+	 * Default ARPGBehavior Constructor
 	 * @param window (Window), not null
 	 * @param name (String): Name of the Behavior, not null
 	 */
@@ -56,9 +55,6 @@ public class ARPGBehavior extends AreaBehavior {
 		return (((ARPGCell)getCell(coord.x, coord.y)).isDoor());
 	}
 	
-	public boolean isGrass(DiscreteCoordinates coord) {
-		return (((ARPGCell)getCell(coord.x, coord.y)).isGrass());
-	}
 	/**
 	 * Cell adapted to the ARPG game
 	 */
@@ -79,9 +75,7 @@ public class ARPGBehavior extends AreaBehavior {
 		public boolean isDoor() {
 			return type == ARPGCellType.DOOR;
 		}
-		public boolean isGrass() {
-			return type == ARPGCellType.GRASS;
-		}
+		
 		@Override
 		protected boolean canLeave(Interactable entity) {
 			return true;

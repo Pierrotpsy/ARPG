@@ -281,7 +281,7 @@ public abstract class Area implements Playable {
     	}
 
     	// Update camera location
-    	updateCamera();
+    	updateCamera(); 
 
     	// Draw actors
     	for (Actor actor : actors) {
