@@ -12,6 +12,7 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
+import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.RegionOfInterest;
@@ -22,29 +23,29 @@ public class Bombs extends AreaEntity implements Interactor {
 	private final static int ANIMATION_DURATION = 8;
 	private int timer;
 	private int i;
-	private RPGSprite sprite;
-	private boolean isExploding;
+	private RPGSprite sprite = new RPGSprite("zelda/bomb", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
+	private boolean isExploding = false;
+	private ARPGBombHandler handler = new ARPGBombHandler();
 	
 	
-	Sprite[][] sprites = RPGSprite.extractSprites("zelda/explosion", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
+	Sprite[][] sprites = RPGSprite.extractSprites("zelda/explosion", 7, 1, 1, this, 32, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
 	Animation [] animations = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
 	
-	public Bombs(Area area, Orientation orientation, DiscreteCoordinates position, int timer) {
-		super(area, orientation, position);
-		this.timer = timer;
-		sprite = new RPGSprite("zelda/bomb", 1, 2, this, new RegionOfInterest(0, 0, 16, 32));
+	public Bombs(Area area, DiscreteCoordinates position, int timer) {
+		super(area, Orientation.DOWN, position);
+		this.timer = timer; 
+
 	}
 	
 	@Override
 	public List<DiscreteCoordinates> getCurrentCells() {
-		// TODO Auto-generated method stub
 		return Collections.singletonList(getCurrentMainCellCoordinates());
 	}
 
 	@Override
 	public boolean takeCellSpace() {
-		return (timer != 0);
+		return true;
 	}
 
 	@Override
@@ -67,7 +68,7 @@ public class Bombs extends AreaEntity implements Interactor {
 	@Override
 	public void draw(Canvas canvas) {
 		if (isExploding) {
-			animations[i].draw(canvas);
+			animations[2].draw(canvas);
 
 		} else {
 			sprite.draw(canvas);
@@ -77,10 +78,10 @@ public class Bombs extends AreaEntity implements Interactor {
 	
 	@Override
 	public void update(float deltaTime) {
-		if (timer > 0) {
-			timer -= 1;
-		} if (timer == 0) {
-			animations[i].update(deltaTime);
+		timer -=0.1 ;
+		if (timer == 0) {
+			isExploding = true;
+			animations[2].update(deltaTime);
 			getOwnerArea().unregisterActor(this);
 		}
 		super.update(deltaTime);
@@ -88,8 +89,7 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
-		// TODO Auto-generated method stub
-		return Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
+		return getCurrentMainCellCoordinates().getNeighbours();
 	}
 
 	@Override
@@ -100,14 +100,28 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public boolean wantsViewInteraction() {
+		if(isExploding) {
+			return true;
+
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void interactWith(Interactable other) {
-		// TODO Auto-generated method stub
+		other.acceptInteraction(handler);
 		
 	}
 	
+	private class ARPGBombHandler implements ARPGInteractionVisitor {
+		
+		@Override
+		public void interactWith(Grass grass) {
+			grass.slice();
+		}
+		
+
+		
+	}
 }

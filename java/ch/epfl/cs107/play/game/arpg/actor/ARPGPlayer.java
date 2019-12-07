@@ -270,6 +270,7 @@ public class ARPGPlayer extends Player {
 		public void interactWith(Grass grass) {
 			grass.slice();
 		}
+		
 
 		
 	}

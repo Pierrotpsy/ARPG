@@ -50,7 +50,25 @@ public final class DiscreteCoordinates implements Serializable {
     public DiscreteCoordinates down(){
         return new DiscreteCoordinates(x, y-1);
     }
+    
+    public DiscreteCoordinates upLeft(){
+        return new DiscreteCoordinates(x-1, y+1);
+    }
 
+    
+    public DiscreteCoordinates downLeft(){
+        return new DiscreteCoordinates(x-1, y-1);
+    }
+
+    
+    public DiscreteCoordinates upRight(){
+        return new DiscreteCoordinates(x+1, y+1);
+    }
+
+    
+    public DiscreteCoordinates downRight(){
+        return new DiscreteCoordinates(x+1, y-1);
+    }
     /**
      * Return the neighbours coordinates
      * @return (float): the neighbours
@@ -58,9 +76,13 @@ public final class DiscreteCoordinates implements Serializable {
     public List<DiscreteCoordinates> getNeighbours(){
     	List<DiscreteCoordinates> result = new ArrayList<DiscreteCoordinates>();
     	result.add(left());
+    	result.add(upLeft());
     	result.add(up());
+    	result.add(downLeft());
     	result.add(right());
+    	result.add(upRight());
     	result.add(down());
+    	result.add(downRight());
     	return result;
     }
     

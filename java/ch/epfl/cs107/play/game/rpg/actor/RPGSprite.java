@@ -144,7 +144,7 @@ public class RPGSprite extends Sprite {
 		}
 		return sprites;
 	}
-
+	
 	/**
 	 * Extracts from an image the sprites corresponding to a given orientation
 	 * the returned array has 4 entry (one per orientation)
