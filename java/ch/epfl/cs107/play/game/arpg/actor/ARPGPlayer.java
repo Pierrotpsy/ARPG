@@ -94,10 +94,10 @@ public class ARPGPlayer extends Player {
 	        if (isDisplacementOccurs()) {
 		        animations[i].update(deltaTime);
 	        } else animations[i].reset();
+	       
 	        
 	        super.update(deltaTime);
 	        
-	        //List<DiscreteCoordinates> coords = getEnteredCells();
 	        List<DiscreteCoordinates> coords = getCurrentCells();
 	        if (coords != null) {
 	        	for (DiscreteCoordinates c : coords) {
@@ -153,7 +153,9 @@ public class ARPGPlayer extends Player {
 	        area.setViewCandidate(this);
 	        setOwnerArea(area);
 	        setCurrentPosition(position.toVector());
+	        resetDoorState();
 	        resetMotion();
+	        
 	    }
     
 	@Override
@@ -209,7 +211,11 @@ public class ARPGPlayer extends Player {
 
 	@Override
 	public boolean wantsViewInteraction() {
-		// key E
+		Keyboard keyboard= getOwnerArea().getKeyboard();
+		Button e = keyboard.get(Keyboard.E);
+		if (e.isPressed()) {
+			return true;
+		}
 		return false;
 	}
 
@@ -221,12 +227,18 @@ public class ARPGPlayer extends Player {
     public Door passedDoor(){
         return passedDoor;
     }
-	
+    
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
 			setIsPassingADoor(door);
 	    }
+		
+		@Override
+		public void interactWith(Grass grass) {
+			grass.slice();
+		}
+
 		
 	}
 }

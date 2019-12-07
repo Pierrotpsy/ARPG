@@ -41,7 +41,7 @@ public class ARPG extends AreaGame {
 		if (super.begin(window, fileSystem)) {
 
 			createAreas();
-			areaIndex = 0;
+			areaIndex = 2;
 			Area area = setCurrentArea(areas[areaIndex], true);
 			player = new ARPGPlayer(area, Orientation.DOWN, startingPosition,"ghost.1");
 			area.registerActor(player);
@@ -53,15 +53,16 @@ public class ARPG extends AreaGame {
 
 	@Override
 	public void update(float deltaTime) {
-		super.update(deltaTime);
 		
 		if(player.isPassingADoor()){
             Door door = player.passedDoor();
             player.leaveArea();
             Area area = setCurrentArea(door.getDestination(), false);
             player.enterArea(area, door.getOtherSideCoordinates());
-            player.resetDoorState();
+            System.out.println(area);
         }	
+		
+		super.update(deltaTime);
 
 	}
 
@@ -71,7 +72,7 @@ public class ARPG extends AreaGame {
 
 	@Override
 	public String getTitle() {
-		return "ARPG!!";
+		return "ARPG";
 	}
 
 }

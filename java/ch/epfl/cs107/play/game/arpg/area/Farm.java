@@ -31,5 +31,3 @@ public class Farm extends ARPGArea {
 	}
 	
 }
-
-//    public Door(String destination, DiscreteCoordinates otherSideCoordinates, Logic signal, Area area, Orientation orientation, DiscreteCoordinates position, DiscreteCoordinates... otherCells) {
