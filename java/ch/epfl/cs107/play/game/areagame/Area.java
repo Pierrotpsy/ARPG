@@ -80,6 +80,7 @@ public abstract class Area implements Playable {
 
         if(a instanceof Interactor)
             errorHappen = !interactors.add((Interactor) a);
+
         if(a instanceof Interactable)
             errorHappen = errorHappen || !enterAreaCells(((Interactable) a), ((Interactable) a).getCurrentCells());
         errorHappen = errorHappen || !actors.add(a);

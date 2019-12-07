@@ -53,13 +53,15 @@ public class ARPG extends AreaGame {
 
 	@Override
 	public void update(float deltaTime) {
-		if(player.isPassingADoor()){
-			//switchArea(); 
-		}
-		
-		player.resetDoorState();
-
 		super.update(deltaTime);
+		
+		if(player.isPassingADoor()){
+            Door door = player.passedDoor();
+            player.leaveArea();
+            Area area = setCurrentArea(door.getDestination(), false);
+            player.enterArea(area, door.getOtherSideCoordinates());
+            player.resetDoorState();
+        }	
 
 	}
 
@@ -70,17 +72,6 @@ public class ARPG extends AreaGame {
 	@Override
 	public String getTitle() {
 		return "ARPG!!";
-	}
-
-	protected void switchArea(Door door) {
-		System.out.println("b");
-
-		player.leaveArea();
-
-		Area currentArea = setCurrentArea(door.getDestination(), false);
-		player.enterArea(currentArea, door.getOtherSideCoordinates());
-
-		player.strengthen();
 	}
 
 }

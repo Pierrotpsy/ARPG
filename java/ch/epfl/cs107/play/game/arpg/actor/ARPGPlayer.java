@@ -16,6 +16,7 @@ import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
+import ch.epfl.cs107.play.game.arpg.ARPG;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -32,6 +33,7 @@ public class ARPGPlayer extends Player {
 	private TextGraphics message;
 	private Sprite sprite;
 	private boolean isPassingADoor;
+	private Door passedDoor;
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
@@ -51,7 +53,7 @@ public class ARPGPlayer extends Player {
 		message.setParent(this);
 		message.setAnchor(new Vector(-0.3f, 0.1f));
 		sprite = sprites[0][0];
-
+		passedDoor = null;
 		resetMotion();
 	}
 	 
@@ -99,7 +101,7 @@ public class ARPGPlayer extends Player {
 	        List<DiscreteCoordinates> coords = getCurrentCells();
 	        if (coords != null) {
 	        	for (DiscreteCoordinates c : coords) {
-	        		if (((ARPGArea)getOwnerArea()).isDoor(c)) setIsPassingADoor();
+	        		if (((ARPGArea)getOwnerArea()).isDoor(c)) setIsPassingADoor(passedDoor);
 	        	}
 	        }
 	    }
@@ -118,8 +120,11 @@ public class ARPGPlayer extends Player {
 	    }
 	    /**
 	     * Indicate the player just passed a door
+	     *
 	     */
-	    protected void setIsPassingADoor(){ // 
+	     @Override
+	    protected void setIsPassingADoor(Door door){ // 
+	    	passedDoor = door;
 	        isPassingADoor = true;
 	    }
 
@@ -198,13 +203,13 @@ public class ARPGPlayer extends Player {
 
 	@Override
 	public boolean wantsCellInteraction() {
-		// TODO Auto-generated method stub
-		return false;
+
+		return true;
 	}
 
 	@Override
 	public boolean wantsViewInteraction() {
-		// TODO Auto-generated method stub
+		// key E
 		return false;
 	}
 
@@ -212,11 +217,16 @@ public class ARPGPlayer extends Player {
 	public void interactWith(Interactable other) {
 		other.acceptInteraction(handler);
 	}
+
+    public Door passedDoor(){
+        return passedDoor;
+    }
 	
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
-	        
+			setIsPassingADoor(door);
 	    }
+		
 	}
 }

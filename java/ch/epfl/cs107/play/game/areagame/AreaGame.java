@@ -97,6 +97,7 @@ abstract public class AreaGame implements Game//, PauseMenu.Pausable
 
     @Override
     public void update(float deltaTime) {
+
     	currentArea.update(deltaTime);
     }
 
