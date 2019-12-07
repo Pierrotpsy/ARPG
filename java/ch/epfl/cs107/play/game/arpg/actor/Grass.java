@@ -19,8 +19,8 @@ import ch.epfl.cs107.play.window.Canvas;
 public class Grass extends AreaEntity {
 	
 	private boolean IsCellSpaceTaken = true;
-	Sprite[][] sprites = RPGSprite.extractSprites("zelda/grass.sliced", 4, 1, 1, this, 16, 16, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
-	Animation[] animation = RPGSprite.createAnimations(1, sprites);
+	//Sprite[][] sprites = RPGSprite.extractSprites("zelda/grass.sliced", 4, 1, 1, this, 16, 16, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
+	//Animation[] animation = RPGSprite.createAnimations(1, sprites);
 	private RPGSprite sprite = new RPGSprite("zelda/grass", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
 	
 	public Grass(Area area, DiscreteCoordinates position) {
@@ -57,10 +57,10 @@ public class Grass extends AreaEntity {
 		if (IsCellSpaceTaken) {
 			sprite.draw(canvas);
 		} else {
-			animation[0].draw(canvas);
+			/*animation[0].draw(canvas);
 			animation[1].draw(canvas);
 			animation[2].draw(canvas);
-			animation[3].draw(canvas);
+			animation[3].draw(canvas);*/
 		}
 
 	}

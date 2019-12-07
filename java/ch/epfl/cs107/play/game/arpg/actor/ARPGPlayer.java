@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
+import ch.epfl.cs107.play.game.actor.ShapeGraphics;
 import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
@@ -20,6 +21,7 @@ import ch.epfl.cs107.play.game.arpg.ARPG;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
+import ch.epfl.cs107.play.math.Polygon;
 import ch.epfl.cs107.play.math.RegionOfInterest;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Button;
@@ -31,6 +33,8 @@ public class ARPGPlayer extends Player {
 	private float hp;
 	private int i;
 	private TextGraphics message;
+	private ShapeGraphics HPbarGreen;
+	private ShapeGraphics HPbarRed;
 	private Sprite sprite;
 	private boolean isPassingADoor;
 	private Door passedDoor;
@@ -48,10 +52,12 @@ public class ARPGPlayer extends Player {
 	 */
 	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates, String spriteName) {
 		super(owner, orientation, coordinates);
-		this.hp = 10;
+		this.hp = 100;
 		message = new TextGraphics(Integer.toString((int)hp), 0.4f, Color.BLUE);
+		HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0.1f, 1.8f), new Vector((float) 1, 1.8f), new Vector((float) 1, 1.7f), new Vector( 0.1f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
+		HPbarGreen.setParent(this);
 		message.setParent(this);
-		message.setAnchor(new Vector(-0.3f, 0.1f));
+		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
 		passedDoor = null;
 		resetMotion();
@@ -59,11 +65,29 @@ public class ARPGPlayer extends Player {
 	 
 	 @Override
 	    public void update(float deltaTime) {
+		
+		 
 		 if (hp > 0) {
-				hp -=deltaTime;
+			 HPbarGreen = null;
+			 HPbarRed = null;
+			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/100f, 1.8f), new Vector((float) hp/100f, 1.7f), new Vector( 0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
+			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/100, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/100, 1.7f)), Color.RED, Color.BLACK, 0.01f);
+			 HPbarGreen.setParent(this);
+			 HPbarRed.setParent(this);
+		 }
+		 
+		 
+		 if (hp > 0) {
 				message.setText(Integer.toString((int)hp));
+				
 			}
-			if (hp < 0) hp = 0.f;
+		 if (hp < 0) {
+			 hp = 0.f;
+			 HPbarGreen = null;
+			 HPbarRed = null;
+			 HPbarRed = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector(0f, 1.7f)), Color.RED, Color.BLACK, 0.01f);
+			 HPbarRed.setParent(this);
+		 }
 			Keyboard keyboard= getOwnerArea().getKeyboard();
 	        moveOrientate(Orientation.LEFT, keyboard.get(Keyboard.LEFT));
 	        moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
@@ -160,8 +184,16 @@ public class ARPGPlayer extends Player {
     
 	@Override
 	public void draw(Canvas canvas) {
-		animations[i].draw(canvas);	
-		message.draw(canvas);
+		animations[i].draw(canvas);
+		if (HPbarGreen != null) {
+			HPbarGreen.draw(canvas);
+
+		}
+		if (HPbarRed != null) {
+			HPbarRed.draw(canvas);
+
+		}
+		//message.draw(canvas);
 	}
 
 	public boolean isWeak() {
