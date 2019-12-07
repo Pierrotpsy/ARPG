@@ -30,7 +30,7 @@ public abstract class Area implements Playable {
     private Actor viewCandidate;
     private Vector viewCenter;
     /// List of Actors inside the area
-    private List<Actor> actors;
+    private static List<Actor> actors;
     /// List of Actors we want to register/unregistered from the area for next update iteration
     private List<Actor> registeredActors;
     private List<Actor> unregisteredActors;
@@ -343,6 +343,10 @@ public abstract class Area implements Playable {
     public void end() {
         // by default does nothing
     	// can save the Area state somewhere if wanted
+    }
+    
+    public static List<Actor> getActors() {
+    	return actors;
     }
 
 }

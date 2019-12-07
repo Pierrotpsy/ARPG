@@ -13,7 +13,7 @@ public class Road extends ARPGArea {
 
 	@Override
 	public String getTitle() {
-		return "zelda/Road";
+		return "zelda/Route";
 	}
 
 	
@@ -22,7 +22,7 @@ public class Road extends ARPGArea {
         // Base
         registerActor(new Background(this));
         registerActor(new Foreground(this));
-        registerActor(new Door("zelda/Farm", new DiscreteCoordinates(18,15), Logic.TRUE ,this , Orientation.UP, new DiscreteCoordinates(0,15), new DiscreteCoordinates(0,16)));
+        registerActor(new Door("zelda/Ferme", new DiscreteCoordinates(18,15), Logic.TRUE ,this , Orientation.UP, new DiscreteCoordinates(0,15), new DiscreteCoordinates(0,16)));
         registerActor(new Door("zelda/Village", new DiscreteCoordinates(29,18), Logic.TRUE ,this , Orientation.DOWN, new DiscreteCoordinates(9,0), new DiscreteCoordinates(10,0)));
 
 	}

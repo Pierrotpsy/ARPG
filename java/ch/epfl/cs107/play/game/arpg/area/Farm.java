@@ -24,7 +24,7 @@ public class Farm extends ARPGArea {
         // Base
         registerActor(new Background(this));
         registerActor(new Foreground(this));
-        registerActor(new Door("zelda/Road", new DiscreteCoordinates(1,15), Logic.TRUE ,this , Orientation.RIGHT, new DiscreteCoordinates(19,15), new DiscreteCoordinates(19,16)));
+        registerActor(new Door("zelda/Route", new DiscreteCoordinates(1,15), Logic.TRUE ,this , Orientation.RIGHT, new DiscreteCoordinates(19,15), new DiscreteCoordinates(19,16)));
         registerActor(new Door("zelda/Village", new DiscreteCoordinates(4,18), Logic.TRUE ,this , Orientation.DOWN, new DiscreteCoordinates(4,0), new DiscreteCoordinates(5,0)));
         registerActor(new Door("zelda/Village", new DiscreteCoordinates(14,18), Logic.TRUE ,this , Orientation.DOWN, new DiscreteCoordinates(13,0), new DiscreteCoordinates(14,0)));
 

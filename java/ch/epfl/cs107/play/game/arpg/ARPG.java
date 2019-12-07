@@ -1,13 +1,16 @@
 package ch.epfl.cs107.play.game.arpg;
 
+import ch.epfl.cs107.play.game.actor.Actor;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.AreaGame;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.arpg.area.Farm;
+import ch.epfl.cs107.play.game.arpg.area.Road;
 import ch.epfl.cs107.play.game.arpg.area.Village;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
+import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.window.Window;
 
 public class ARPG extends AreaGame {
@@ -16,9 +19,8 @@ public class ARPG extends AreaGame {
 
 
 	private ARPGPlayer player;
-	private final String[] areas = {"zelda/Ferme", "zelda/Village"};
-	private final DiscreteCoordinates[] startingPositions = {new DiscreteCoordinates(2,10), 
-															 new DiscreteCoordinates(5,15)};
+	private final String[] areas = {"zelda/Ferme", "zelda/Village", "zelda/Route"};
+	private final DiscreteCoordinates startingPosition = new DiscreteCoordinates(5,15);
 
 	private int areaIndex;
 	/**
@@ -28,6 +30,7 @@ public class ARPG extends AreaGame {
 
 		addArea(new Farm());
 		addArea(new Village());
+		addArea(new Road());
 
 	}
 
@@ -40,7 +43,7 @@ public class ARPG extends AreaGame {
 			createAreas();
 			areaIndex = 0;
 			Area area = setCurrentArea(areas[areaIndex], true);
-			player = new ARPGPlayer(area, Orientation.DOWN, startingPositions[areaIndex],"ghost.1");
+			player = new ARPGPlayer(area, Orientation.DOWN, startingPosition,"ghost.1");
 			area.registerActor(player);
 			area.setViewCandidate(player);
 			return true;
@@ -51,9 +54,11 @@ public class ARPG extends AreaGame {
 	@Override
 	public void update(float deltaTime) {
 		if(player.isPassingADoor()){
-			switchArea();         
-			player.resetDoorState();
+			//switchArea(); 
 		}
+		
+		player.resetDoorState();
+
 		super.update(deltaTime);
 
 	}
@@ -67,14 +72,13 @@ public class ARPG extends AreaGame {
 		return "ARPG!!";
 	}
 
-	protected void switchArea() {
+	protected void switchArea(Door door) {
+		System.out.println("b");
 
 		player.leaveArea();
 
-		areaIndex = (areaIndex==0) ? 1 : 0;
-
-		Area currentArea = setCurrentArea(areas[areaIndex], false);
-		player.enterArea(currentArea, startingPositions[areaIndex]);
+		Area currentArea = setCurrentArea(door.getDestination(), false);
+		player.enterArea(currentArea, door.getOtherSideCoordinates());
 
 		player.strengthen();
 	}

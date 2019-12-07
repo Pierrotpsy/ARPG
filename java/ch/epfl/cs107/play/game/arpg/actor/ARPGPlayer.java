@@ -34,6 +34,7 @@ public class ARPGPlayer extends Player {
 	private boolean isPassingADoor;
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
+    private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
     
     Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
@@ -66,7 +67,6 @@ public class ARPGPlayer extends Player {
 	        moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
 	        moveOrientate(Orientation.RIGHT, keyboard.get(Keyboard.RIGHT));
 	        moveOrientate(Orientation.DOWN, keyboard.get(Keyboard.DOWN));
-	        
 	        
 	        switch(getOrientation()) {
 	        	case LEFT :
@@ -210,14 +210,13 @@ public class ARPGPlayer extends Player {
 
 	@Override
 	public void interactWith(Interactable other) {
-		// TODO Auto-generated method stub
-		
+		other.acceptInteraction(handler);
 	}
 	
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
-	        setIsPassingADoor(door);
+	        
 	    }
 	}
 }
