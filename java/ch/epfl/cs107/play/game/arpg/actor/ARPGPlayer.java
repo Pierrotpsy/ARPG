@@ -88,15 +88,15 @@ public class ARPGPlayer extends Player {
 		sprite = sprites[0][0];
 		passedDoor = null;
 		inventory = new ARPGInventory(100, 100);
-		GUI = new ARPGPlayerGUI();
-		keySet = new ArrayList<ARPGItem>(inventory.getItems().keySet());
+		GUI = new ARPGPlayerGUI(this);
+		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
 		addItem(ARPGItem.Bomb, 3);
 		addItem(ARPGItem.Bow, 1);
 		addItem(ARPGItem.Staff, 1);
 		addItem(ARPGItem.CastleKey, 1);
 		addItem(ARPGItem.Sword, 1);
 		
-		for(Map.Entry<ARPGItem, Integer> entry: inventory.getItems().entrySet()) {
+		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
 			if (entry.getValue() > 0) {
 				usedItem = entry.getKey();
 				break;
@@ -265,13 +265,6 @@ public class ARPGPlayer extends Player {
 	public void draw(Canvas canvas) {
 		GUI.draw(canvas);
 		
-		float width = canvas.getScaledWidth();
-		float height = canvas.getScaledHeight();
-		Vector anchor = canvas.getTransform().getOrigin().sub(new
-		Vector(width/2, height/2)); ImageGraphics gear = new
-		ImageGraphics(ResourcePath.getSprite(getUsedItemPath()), 0.75f, 0.75f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(0.4f, height - 1.4f)), 1, 0f);
-		gear.draw(canvas);
-		
 		
 		
 		if(isUsingSword > 0) {
@@ -359,7 +352,7 @@ public class ARPGPlayer extends Player {
     }
     
     public boolean possess(InventoryItem item) {
-    	return inventory.getItems().get(item) > 0;
+    	return getInventory().getItems().get(item) > 0;
     }
     
     public void damage(int d) {
@@ -368,27 +361,27 @@ public class ARPGPlayer extends Player {
     
     public boolean addItem(InventoryItem item, int amount) {
     	int i;
-		if (inventory.getOverallWeight() + amount*item.getWeight() < inventory.getMaxWeight()) {
-			int a = inventory.getItems().get(item);
+		if (getInventory().getOverallWeight() + amount*item.getWeight() < getInventory().getMaxWeight()) {
+			int a = getInventory().getItems().get(item);
 			for (i = 0; i < amount - 1; i++) {
-				inventory.getItems().replace((ARPGItem) item, a, a+1);
+				getInventory().getItems().replace((ARPGItem) item, a, a+1);
 				a++;
 			}
 			
-			return inventory.getItems().replace((ARPGItem) item, a, a+1);
+			return getInventory().getItems().replace((ARPGItem) item, a, a+1);
 		}
 		return false;
 	}
 	
 	public boolean removeItem(InventoryItem item, int amount) {
 		int i;
-		if(inventory.getItems().get(item) > 0) {
-			int a = inventory.getItems().get(item);
+		if(getInventory().getItems().get(item) > 0) {
+			int a = getInventory().getItems().get(item);
 			for (i = 0; i < amount - 1; i++) {
-				inventory.getItems().replace((ARPGItem) item, a, a-1);
+				getInventory().getItems().replace((ARPGItem) item, a, a-1);
 				a--;
 			}
-			return inventory.getItems().replace((ARPGItem) item, a, a-1);
+			return getInventory().getItems().replace((ARPGItem) item, a, a-1);
 		}
 			return false;
 	}
@@ -397,11 +390,10 @@ public class ARPGPlayer extends Player {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
 		usedItem = keySet.get(a+1);
-		System.out.println(usedItem);
 	}
     
 	public void useItem() {
-		if (usedItem == ARPGItem.Bomb && inventory.getItems().get(ARPGItem.Bomb) > 0 && !isDisplacementOccurs()) {
+		if (usedItem == ARPGItem.Bomb && getInventory().getItems().get(ARPGItem.Bomb) > 0 && !isDisplacementOccurs()) {
 			boolean b = getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
 			if (b) removeItem(ARPGItem.Bomb, 1);
 		}
@@ -427,6 +419,10 @@ public class ARPGPlayer extends Player {
 		return usedItem.getPath();
 	}
 	
+	public ARPGInventory getInventory() {
+		return inventory;
+	}
+
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
