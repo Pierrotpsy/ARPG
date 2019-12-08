@@ -1,6 +1,8 @@
 package ch.epfl.cs107.play.game.arpg.handler;
 
+import ch.epfl.cs107.play.game.areagame.actor.CollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.ARPGBehavior.ARPGCell;
+import ch.epfl.cs107.play.game.arpg.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.rpg.handler.RPGInteractionVisitor;
 

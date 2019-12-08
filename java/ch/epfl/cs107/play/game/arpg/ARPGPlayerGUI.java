@@ -97,7 +97,6 @@ public class ARPGPlayerGUI implements Graphics{
 				
 			}
 		}
-		System.out.println(digits.length);
 		
 		return digits;
 	}

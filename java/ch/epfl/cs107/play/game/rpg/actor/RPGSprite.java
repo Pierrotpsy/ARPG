@@ -98,6 +98,15 @@ public class RPGSprite extends Sprite {
 		return animations;
 	}
 	
+	public static Animation createSingleAnimation(int animationDuration, Sprite[][] sprites, boolean repeat)
+	{
+		return new Animation(animationDuration, sprites[0], repeat);
+	}
+	
+	public static Animation createSingleAnimation(int animationDuration, Sprite[][] sprites)
+	{
+		return new Animation(animationDuration, sprites[0]);
+	}
 	/**
 	 * Creates an array of 4 animations (one animation per orientation)
 	 * the entry indexed by Orientation.dir.ordinal() is the animation corresponding 
@@ -141,6 +150,19 @@ public class RPGSprite extends Sprite {
 			sprites[order[1].ordinal()][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, regionHeight*j++, regionWidth, regionHeight));
 			sprites[order[2].ordinal()][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, regionHeight*j++, regionWidth, regionHeight));
 			sprites[order[3].ordinal()][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, regionHeight*j, regionWidth, regionHeight));
+		}
+		return sprites;
+	}
+	
+	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight){  	
+
+		Sprite[][] sprites = new Sprite[1][nbFrames];
+
+		for(int i = 0; i < nbFrames; i++){
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
 		}
 		return sprites;
 	}

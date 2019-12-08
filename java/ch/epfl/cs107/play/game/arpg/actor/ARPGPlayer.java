@@ -13,6 +13,7 @@ import ch.epfl.cs107.play.game.actor.ShapeGraphics;
 import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
+import ch.epfl.cs107.play.game.areagame.actor.CollectableAreaEntity;
 import ch.epfl.cs107.play.game.areagame.actor.Interactable;
 import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
@@ -24,6 +25,7 @@ import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.areagame.io.ResourcePath;
 import ch.epfl.cs107.play.game.arpg.ARPG;
+import ch.epfl.cs107.play.game.arpg.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.ARPGPlayerGUI;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
@@ -287,8 +289,12 @@ public class ARPGPlayer extends Player {
 		return (hp <= 0.f);
 	}
 
-	public void strengthen() {
-		hp = 10;
+	public void strengthen(int points) {
+		if (hp + points > 100) {
+			hp = 100;
+		} else {
+			hp += points;
+		}
 	}
 
 	///Ghost implements Interactable
@@ -432,10 +438,20 @@ public class ARPGPlayer extends Player {
 		
 		@Override
 		public void interactWith(Grass grass) {
-			if (usedItem == ARPGItem.Sword)
 			grass.slice();
 		}
 		
+		@Override
+		public void interactWith(CollectableAreaEntity object) {
+			if (((ARPGCollectableAreaEntity) object).getName() == "Coin") {
+				inventory.addMoney(((ARPGCollectableAreaEntity) object).getValue());
+			}
+			
+			if (((ARPGCollectableAreaEntity) object).getName() == "Heart") {
+				strengthen(((ARPGCollectableAreaEntity) object).getValue());	
+			}
+			((ARPGCollectableAreaEntity) object).collect();
+		}
 
 		
 	}
