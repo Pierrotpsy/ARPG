@@ -91,9 +91,6 @@ public class ARPGPlayer extends Player {
 		GUI = new ARPGPlayerGUI(this);
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
 		addItem(ARPGItem.Bomb, 3);
-		addItem(ARPGItem.Bow, 1);
-		addItem(ARPGItem.Staff, 1);
-		addItem(ARPGItem.CastleKey, 1);
 		addItem(ARPGItem.Sword, 1);
 		
 		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
@@ -389,6 +386,10 @@ public class ARPGPlayer extends Player {
 	public void switchItem() {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
+		while (inventory.getItems().get(keySet.get(a+1)) == 0) {
+			a += 1;
+			if (a + 1 == keySet.size()) a = -1;
+		}
 		usedItem = keySet.get(a+1);
 	}
     
