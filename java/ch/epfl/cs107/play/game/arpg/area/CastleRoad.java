@@ -20,6 +20,7 @@ public class CastleRoad extends ARPGArea {
 		registerActor(new Background(this));
         registerActor(new Foreground(this));
         registerActor(new Door("zelda/Route", new DiscreteCoordinates(9,18), Logic.TRUE ,this , Orientation.DOWN, new DiscreteCoordinates(9,0), new DiscreteCoordinates(10,0)));
+        registerActor(new Door("zelda/Chateau", new DiscreteCoordinates(7,1), Logic.TRUE ,this , Orientation.UP, new DiscreteCoordinates(9,13), new DiscreteCoordinates(10,13)));
 	}
 
 }
