@@ -5,6 +5,8 @@ import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.AreaGame;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
+import ch.epfl.cs107.play.game.arpg.area.Castle;
+import ch.epfl.cs107.play.game.arpg.area.CastleRoad;
 import ch.epfl.cs107.play.game.arpg.area.Farm;
 import ch.epfl.cs107.play.game.arpg.area.Road;
 import ch.epfl.cs107.play.game.arpg.area.Village;
@@ -31,6 +33,8 @@ public class ARPG extends AreaGame {
 		addArea(new Farm());
 		addArea(new Village());
 		addArea(new Road());
+		addArea(new CastleRoad());
+		addArea(new Castle());
 
 	}
 

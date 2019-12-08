@@ -289,11 +289,15 @@ public class ARPGPlayer extends Player {
 		return (hp <= 0.f);
 	}
 
-	public void strengthen(int points) {
-		if (hp + points > 100) {
+	public boolean strengthen(int points) {
+		if (hp == 100) {
+			return false;
+		} else if (hp + points > 100) {
 			hp = 100;
+			return true;
 		} else {
 			hp += points;
+			return true;
 		}
 	}
 
@@ -443,14 +447,17 @@ public class ARPGPlayer extends Player {
 		
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
+			boolean a = false;
+			boolean b = false;
+			
 			if (((ARPGCollectableAreaEntity) object).getName() == "Coin") {
-				inventory.addMoney(((ARPGCollectableAreaEntity) object).getValue());
+				a = inventory.addMoney(((ARPGCollectableAreaEntity) object).getValue());
 			}
 			
 			if (((ARPGCollectableAreaEntity) object).getName() == "Heart") {
-				strengthen(((ARPGCollectableAreaEntity) object).getValue());	
+				b = strengthen(((ARPGCollectableAreaEntity) object).getValue());	
 			}
-			((ARPGCollectableAreaEntity) object).collect();
+			if (a || b) ((ARPGCollectableAreaEntity) object).collect();
 		}
 
 		

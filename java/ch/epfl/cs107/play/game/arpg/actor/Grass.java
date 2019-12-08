@@ -7,7 +7,6 @@ import java.util.List;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
 import ch.epfl.cs107.play.game.areagame.actor.AreaEntity;
-import ch.epfl.cs107.play.game.areagame.actor.Interactable;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
@@ -94,7 +93,7 @@ public class Grass extends AreaEntity {
 		} else if (RandomGenerator.getInstance().nextDouble() < PROBABILITY_TO_DROP_HEART) {
 			getOwnerArea().registerActor(new ARPGCollectableAreaEntity(getOwnerArea(), "Heart", getCurrentMainCellCoordinates(), 20));
 		} else {
-			getOwnerArea().registerActor(new ARPGCollectableAreaEntity(getOwnerArea(), "Coin", getCurrentMainCellCoordinates(), 50));
+			getOwnerArea().registerActor(new ARPGCollectableAreaEntity(getOwnerArea(), "Coin", getCurrentMainCellCoordinates(), 500));
 		}
 	}
 	

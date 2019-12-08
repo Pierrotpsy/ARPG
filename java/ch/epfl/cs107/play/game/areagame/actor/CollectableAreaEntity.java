@@ -33,7 +33,7 @@ public class CollectableAreaEntity extends AreaEntity {
 
 	@Override
 	public boolean isViewInteractable() {
-		return false;
+		return true;
 	}
 
 	@Override

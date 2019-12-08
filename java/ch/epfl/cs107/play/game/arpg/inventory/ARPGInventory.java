@@ -38,8 +38,16 @@ public class ARPGInventory extends Inventory {
 		return weight;
 	}
 	
-	public void addMoney(int coins) {
-		money += coins;
+	public boolean addMoney(int coins) {
+		if (money == 999) {
+			return false;
+		} else if (money + coins > 999) {
+			money = 999;
+			return true;
+		} else {
+			money += coins;
+			return true;
+		}
 	}
 	
 	public int getMoney() {
