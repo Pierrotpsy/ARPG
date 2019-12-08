@@ -40,4 +40,9 @@ public enum ARPGItem implements InventoryItem{
 		
 		return this.price;
 	}
+	@Override
+	public String getPath() {
+		
+		return this.path;
+	}
 }

@@ -8,4 +8,5 @@ public interface InventoryItem {
 	
 	public int getPrice();
 	
+	public String getPath();
 }
