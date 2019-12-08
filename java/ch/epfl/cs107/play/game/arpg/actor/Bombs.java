@@ -121,6 +121,10 @@ public class Bombs extends AreaEntity implements Interactor {
 			grass.slice();
 		}
 		
+		@Override
+		public void interactWith(ARPGPlayer player) {
+			player.damage(20);
+		}
 
 		
 	}

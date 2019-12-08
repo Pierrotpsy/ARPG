@@ -2,8 +2,11 @@ package ch.epfl.cs107.play.game.arpg.actor;
 
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import ch.epfl.cs107.play.game.actor.ShapeGraphics;
 import ch.epfl.cs107.play.game.actor.TextGraphics;
@@ -14,12 +17,15 @@ import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
+import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.ARPG;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
+import ch.epfl.cs107.play.game.arpg.inventory.ARPGInventory;
+import ch.epfl.cs107.play.game.arpg.inventory.ARPGItem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Polygon;
 import ch.epfl.cs107.play.math.RegionOfInterest;
@@ -41,6 +47,9 @@ public class ARPGPlayer extends Player {
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
+    private ARPGInventory inventory;
+    private InventoryItem usedItem;
+    private List<ARPGItem> keySet;
     
     Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
@@ -60,6 +69,21 @@ public class ARPGPlayer extends Player {
 		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
 		passedDoor = null;
+		inventory = new ARPGInventory(100, 100);
+		keySet = new ArrayList<ARPGItem>(inventory.getItems().keySet());
+		addItem(ARPGItem.Bomb, 3);
+		addItem(ARPGItem.Bow, 1);
+		addItem(ARPGItem.Staff, 1);
+		addItem(ARPGItem.CastleKey, 1);
+		addItem(ARPGItem.Sword, 1);
+		
+		for(Map.Entry<ARPGItem, Integer> entry: inventory.getItems().entrySet()) {
+			if (entry.getValue() > 0) {
+				usedItem = entry.getKey();
+				break;
+			}
+		}
+
 		resetMotion();
 	}
 	 
@@ -119,9 +143,18 @@ public class ARPGPlayer extends Player {
 		        animations[i].update(deltaTime);
 	        } else animations[i].reset();
 	       
-	        
 	        super.update(deltaTime);
 	        
+	        Button tab = keyboard.get(Keyboard.TAB);
+			if (tab.isPressed()) {
+				switchItem();
+			}
+			
+			Button space= keyboard.get(Keyboard.SPACE);
+			if (space.isPressed()) {
+				useItem();
+			}
+			
 	        List<DiscreteCoordinates> coords = getCurrentCells();
 	        if (coords != null) {
 	        	for (DiscreteCoordinates c : coords) {
@@ -260,6 +293,70 @@ public class ARPGPlayer extends Player {
         return passedDoor;
     }
     
+    public boolean possess(InventoryItem item) {
+    	return inventory.getItems().get(item) > 0;
+    }
+    
+    public void damage(int d) {
+    	hp -= d;
+    }
+    
+    public boolean addItem(InventoryItem item, int amount) {
+    	int i;
+		if (inventory.getOverallWeight() + amount*item.getWeight() < inventory.getMaxWeight()) {
+			int a = inventory.getItems().get(item);
+			for (i = 0; i < amount - 1; i++) {
+				inventory.getItems().replace((ARPGItem) item, a, a+1);
+				a++;
+			}
+			
+			return inventory.getItems().replace((ARPGItem) item, a, a+1);
+		}
+		return false;
+	}
+	
+	public boolean removeItem(InventoryItem item, int amount) {
+		int i;
+		if(inventory.getItems().get(item) > 0) {
+			int a = inventory.getItems().get(item);
+			for (i = 0; i < amount - 1; i++) {
+				inventory.getItems().replace((ARPGItem) item, a, a-1);
+				a--;
+			}
+			return inventory.getItems().replace((ARPGItem) item, a, a-1);
+		}
+			return false;
+	}
+	
+	public void switchItem() {
+		int a = keySet.indexOf(usedItem);
+		if (a + 1 == keySet.size()) a = -1;
+		usedItem = keySet.get(a+1);
+		System.out.println(usedItem);
+	}
+    
+	public void useItem() {
+		if (usedItem == ARPGItem.Bomb && inventory.getItems().get(ARPGItem.Bomb) > 0 && !isDisplacementOccurs()) {
+			boolean b = getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
+			if (b) removeItem(ARPGItem.Bomb, 1);
+		}
+		if (usedItem == ARPGItem.Bow) {
+			
+		}
+		if (usedItem == ARPGItem.Arrow) {
+			
+		}
+		if (usedItem == ARPGItem.Sword) {
+			
+		}
+		if (usedItem == ARPGItem.Staff) {
+			
+		}
+		if (usedItem == ARPGItem.CastleKey) {
+			
+		}
+		
+	}
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
