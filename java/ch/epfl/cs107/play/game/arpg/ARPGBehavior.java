@@ -15,7 +15,7 @@ public class ARPGBehavior extends AreaBehavior {
 		IMPASSABLE(-8750470, false),
 		INTERACT(-256, true),
 		DOOR(-195580, true),
-		WALKABLE(-1, true),;
+		WALKABLE(-1, true);
 
 		final int type;
 		final boolean isWalkable;
@@ -52,9 +52,6 @@ public class ARPGBehavior extends AreaBehavior {
 			}
 		}
 	}
-	public boolean isDoor(DiscreteCoordinates coord) {
-		return (((ARPGCell)getCell(coord.x, coord.y)).isDoor());
-	}
 	
 	/**
 	 * Cell adapted to the ARPG game
@@ -73,9 +70,10 @@ public class ARPGBehavior extends AreaBehavior {
 			super(x, y);
 			this.type = type;
 		}
-		public boolean isDoor() {
-			return type == ARPGCellType.DOOR;
-		}
+		
+//		public boolean isDoor() {
+//			return type == ARPGCellType.DOOR;
+//		}
 		
 		@Override
 		protected boolean canLeave(Interactable entity) {

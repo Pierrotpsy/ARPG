@@ -1,4 +1,4 @@
-package ch.epfl.cs107.play.game.arpg;
+package ch.epfl.cs107.play.game.arpg.actor.collectables;
 
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
@@ -19,9 +19,6 @@ public class ARPGCollectableAreaEntity extends CollectableAreaEntity {
 	
 	Sprite[][] coinSprites = RPGSprite.extractSprites("zelda/coin", 4, 1, 1, this, 16, 16);
 	Animation coinAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, coinSprites, true);
-	
-	Sprite[][] heartSprites = RPGSprite.extractSprites("zelda/heart", 4, 1, 1, this, 16, 16);
-	Animation heartAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, heartSprites, true);
 	
 	public ARPGCollectableAreaEntity (Area area, String name, DiscreteCoordinates position, int value) {
 		super(area, Orientation.DOWN, position);
@@ -44,23 +41,10 @@ public class ARPGCollectableAreaEntity extends CollectableAreaEntity {
 	
 	@Override
 	public void draw(Canvas canvas) {
-		if (name == "Coin") {
-			coinAnimation.draw(canvas);
-		}
-		
-		if (name == "Heart") {
-			heartAnimation.draw(canvas);
-		}
 	}
 	
 	@Override
 	public void update(float deltaTime) {
-		if (name == "Coin") {
-			coinAnimation.update(deltaTime);
-		}
-		if (name == "Heart") {
-			heartAnimation.update(deltaTime);
-		}
 	}
 }
 

@@ -38,8 +38,4 @@ public abstract class ARPGArea extends Area {
         }
         return false;
     }
-    
-    public boolean isDoor(DiscreteCoordinates coord) {
-    	return (behavior.isDoor(coord));
-    } 
 }
