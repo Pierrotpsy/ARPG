@@ -50,7 +50,7 @@ public class ARPG extends RPG {
 
 	@Override
 	public String getTitle() {
-		return "BienEssayé";
+		return "ARPG";
 	}
 
 }

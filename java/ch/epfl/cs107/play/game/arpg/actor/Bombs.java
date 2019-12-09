@@ -77,8 +77,10 @@ public class Bombs extends AreaEntity implements Interactor {
 	
 	@Override
 	public void update(float deltaTime) {
-		timer -=0.1 ;
-		if (timer == 0) {
+		if (timer > 0) {
+			timer -=0.1 ;
+
+		} else if (timer == 0 || isExploding == true) {
 			isExploding = true;
 			animation.update(deltaTime);
 			getOwnerArea().unregisterActor(this);
@@ -106,7 +108,7 @@ public class Bombs extends AreaEntity implements Interactor {
 			return true;
 
 		}
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
@@ -114,6 +116,10 @@ public class Bombs extends AreaEntity implements Interactor {
 	public void interactWith(Interactable other) {
 		other.acceptInteraction(handler);
 		
+	}
+	
+	public void setExplode() {
+		isExploding = true;
 	}
 	
 	private class ARPGBombHandler implements ARPGInteractionVisitor {
@@ -131,6 +137,12 @@ public class Bombs extends AreaEntity implements Interactor {
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
 			((ARPGCollectableAreaEntity) object).collect();
+		}
+
+		@Override
+		public void interactWith(Bombs bomb) {
+			bomb.setExplode();
+			
 		}
 
 		

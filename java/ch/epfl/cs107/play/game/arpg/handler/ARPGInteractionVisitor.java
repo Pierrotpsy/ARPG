@@ -3,6 +3,7 @@ package ch.epfl.cs107.play.game.arpg.handler;
 import ch.epfl.cs107.play.game.areagame.actor.CollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.ARPGBehavior.ARPGCell;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
+import ch.epfl.cs107.play.game.arpg.actor.Bombs;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
@@ -17,6 +18,10 @@ public interface ARPGInteractionVisitor extends RPGInteractionVisitor {
 	default void interactWith(ARPGPlayer player){
         // by default the interaction is empty
     }
+
+	default void interactWith(Bombs bomb) {
+        // by default the interaction is empty
+	}
 	
 	default void interactWith(Coin coin){
         // by default the interaction is empty
