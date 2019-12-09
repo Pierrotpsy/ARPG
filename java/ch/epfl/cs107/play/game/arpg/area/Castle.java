@@ -11,7 +11,6 @@ public class Castle extends ARPGArea {
 
 	@Override
 	public String getTitle() {
-		// TODO Auto-generated method stub
 		return "zelda/Chateau";
 	}
 

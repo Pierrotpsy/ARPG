@@ -93,6 +93,7 @@ public class ARPGPlayer extends Player {
 		GUI = new ARPGPlayerGUI(this);
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
 		addItem(ARPGItem.Bomb, 3);
+		addItem(ARPGItem.Sword, 1);
 		addItem(ARPGItem.CastleKey, 1);
 		
 		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
@@ -461,6 +462,10 @@ public class ARPGPlayer extends Player {
 			grass.slice();
 		}
 		
+		@Override
+		public void interactWith(Bombs bomb) {
+			bomb.setExplode();
+		}
 		
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
