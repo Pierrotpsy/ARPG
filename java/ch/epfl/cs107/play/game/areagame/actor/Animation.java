@@ -31,7 +31,7 @@ public class Animation implements Updatable, Graphics{
      * Default Animation Constructor
      * @param frameDuration (int): Duration of each frame (all frames have same duration)
      * @param sprites (Sprite...): Array of sprite in the correct sequence order. Not null
-     * @param repeat (bool): If the animation shoudl be restart when completed 
+     * @param repeat (bool): If the animation should be restart when completed 
      */
     public Animation(int frameDuration, Sprite[] sprites, boolean repeat) {
         this.frameDuration = frameDuration;
