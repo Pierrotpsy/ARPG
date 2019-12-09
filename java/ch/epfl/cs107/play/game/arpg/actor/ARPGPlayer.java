@@ -93,7 +93,7 @@ public class ARPGPlayer extends Player {
 		GUI = new ARPGPlayerGUI(this);
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
 		addItem(ARPGItem.Bomb, 3);
-		addItem(ARPGItem.Sword, 1);
+		addItem(ARPGItem.CastleKey, 1);
 		
 		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
 			if (entry.getValue() > 0) {
@@ -342,8 +342,12 @@ public class ARPGPlayer extends Player {
 	public boolean wantsViewInteraction() {
 		Keyboard keyboard= getOwnerArea().getKeyboard();
 		Button e = keyboard.get(Keyboard.E);
+		Button space = keyboard.get(Keyboard.SPACE);
+		
 		if (e.isPressed() && usedItem == ARPGItem.Sword) {
 			isUsingSword = 8;
+			return true;
+		} else if (space.isPressed() && usedItem == ARPGItem.CastleKey) {
 			return true;
 		}
 		return false;
@@ -437,13 +441,26 @@ public class ARPGPlayer extends Player {
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
-			setIsPassingADoor(door);
+			
+			
+			if (door instanceof CastleDoor && usedItem == ARPGItem.CastleKey ) {
+				if (!door.isOpen()) {
+					 ((CastleDoor) door).openDoor();
+				} else {
+					setIsPassingADoor(door);
+					((CastleDoor) door).closeDoor();
+				}
+				
+			} else {
+				setIsPassingADoor(door);
+			}
 	    }
 		
 		@Override
 		public void interactWith(Grass grass) {
 			grass.slice();
 		}
+		
 		
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
