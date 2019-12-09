@@ -12,7 +12,7 @@ import ch.epfl.cs107.play.game.areagame.actor.Interactor;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
-import ch.epfl.cs107.play.game.arpg.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -35,9 +35,8 @@ public class Bombs extends AreaEntity implements Interactor {
 	public Bombs(Area area, DiscreteCoordinates position, int timer) {
 		super(area, Orientation.DOWN, position);
 		this.timer = timer; 
-
 	}
-	
+
 	@Override
 	public List<DiscreteCoordinates> getCurrentCells() {
 		return Collections.singletonList(getCurrentMainCellCoordinates());

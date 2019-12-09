@@ -25,8 +25,11 @@ import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.areagame.io.ResourcePath;
 import ch.epfl.cs107.play.game.arpg.ARPG;
-import ch.epfl.cs107.play.game.arpg.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.ARPGPlayerGUI;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.inventory.ARPGInventory;
@@ -47,8 +50,6 @@ public class ARPGPlayer extends Player {
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	private Sprite sprite;
-	private boolean isPassingADoor;
-	private Door passedDoor;
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
@@ -79,7 +80,7 @@ public class ARPGPlayer extends Player {
 	 * Demo actor
 	 * 
 	 */
-	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates, String spriteName) {
+	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(owner, orientation, coordinates);
 		this.hp = 100;
 		message = new TextGraphics(Integer.toString((int)hp), 0.4f, Color.BLUE);
@@ -88,7 +89,6 @@ public class ARPGPlayer extends Player {
 		message.setParent(this);
 		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
-		passedDoor = null;
 		inventory = new ARPGInventory(100, 100);
 		GUI = new ARPGPlayerGUI(this);
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
@@ -107,7 +107,7 @@ public class ARPGPlayer extends Player {
 	 
 	 @Override
 	    public void update(float deltaTime) {
-		
+		 super.update(deltaTime);
 		 
 		 if (hp > 0) {
 			 HPbarGreen = null;
@@ -187,8 +187,7 @@ public class ARPGPlayer extends Player {
 	        	bowAnimations[j].update(deltaTime);
 	        	isUsingBow--;
 	        } else bowAnimations[j].reset();
-	        
-	        super.update(deltaTime);
+	       
 	        
 	        Button tab = keyboard.get(Keyboard.TAB);
 			if (tab.isPressed()) {
@@ -199,13 +198,6 @@ public class ARPGPlayer extends Player {
 			if (space.isPressed()) {
 				useItem();
 			}
-			
-	        List<DiscreteCoordinates> coords = getCurrentCells();
-	        if (coords != null) {
-	        	for (DiscreteCoordinates c : coords) {
-	        		if (((ARPGArea)getOwnerArea()).isDoor(c)) setIsPassingADoor(passedDoor);
-	        	}
-	        }
 	    }
 
 	    /**
@@ -219,45 +211,6 @@ public class ARPGPlayer extends Player {
 	            if(getOrientation() == orientation) move(ANIMATION_DURATION);
 	            else orientate(orientation);
 	        }
-	    }
-	    /**
-	     * Indicate the player just passed a door
-	     *
-	     */
-	     @Override
-	    protected void setIsPassingADoor(Door door){ // 
-	    	passedDoor = door;
-	        isPassingADoor = true;
-	    }
-
-	    /**@return (boolean): true if the player is passing a door*/
-	    public boolean isPassingADoor(){
-	        return isPassingADoor;
-	    }
-	 
-	    public void resetDoorState() {
-	    	isPassingADoor = false;
-	    }
-	    /**
-	     * Leave an area by unregister this player
-	     */
-	    public void leaveArea(){
-	        getOwnerArea().unregisterActor(this);
-	    }
-
-	    /**
-	     *
-	     * @param area (Area): initial area, not null
-	     * @param position (DiscreteCoordinates): initial position, not null
-	     */
-	    public void enterArea(Area area, DiscreteCoordinates position){
-	        area.registerActor(this);
-	        area.setViewCandidate(this);
-	        setOwnerArea(area);
-	        setCurrentPosition(position.toVector());
-	        resetDoorState();
-	        resetMotion();
-	        
 	    }
     
 	@Override
@@ -354,10 +307,6 @@ public class ARPGPlayer extends Player {
 		other.acceptInteraction(handler);
 	}
 
-    public Door passedDoor(){
-        return passedDoor;
-    }
-    
     public boolean possess(InventoryItem item) {
     	return getInventory().getItems().get(item) > 0;
     }
@@ -366,7 +315,7 @@ public class ARPGPlayer extends Player {
     	hp -= d;
     }
     
-    public boolean addItem(InventoryItem item, int amount) {
+    protected boolean addItem(InventoryItem item, int amount) {
     	int i;
 		if (getInventory().getOverallWeight() + amount*item.getWeight() < getInventory().getMaxWeight()) {
 			int a = getInventory().getItems().get(item);
@@ -380,7 +329,7 @@ public class ARPGPlayer extends Player {
 		return false;
 	}
 	
-	public boolean removeItem(InventoryItem item, int amount) {
+	protected boolean removeItem(InventoryItem item, int amount) {
 		int i;
 		if(getInventory().getItems().get(item) > 0) {
 			int a = getInventory().getItems().get(item);
@@ -393,7 +342,7 @@ public class ARPGPlayer extends Player {
 			return false;
 	}
 	
-	public void switchItem() {
+	protected void switchItem() {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
 		while (inventory.getItems().get(keySet.get(a+1)) == 0) {
@@ -434,6 +383,7 @@ public class ARPGPlayer extends Player {
 		return inventory;
 	}
 
+	
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
@@ -446,20 +396,19 @@ public class ARPGPlayer extends Player {
 		}
 		
 		@Override
-		public void interactWith(CollectableAreaEntity object) {
-			boolean a = false;
-			boolean b = false;
-			
-			if (((ARPGCollectableAreaEntity) object).getName() == "Coin") {
-				a = inventory.addMoney(((ARPGCollectableAreaEntity) object).getValue());
-			}
-			
-			if (((ARPGCollectableAreaEntity) object).getName() == "Heart") {
-				b = strengthen(((ARPGCollectableAreaEntity) object).getValue());	
-			}
-			if (a || b) ((ARPGCollectableAreaEntity) object).collect();
+		public void interactWith(Coin coin) {
+			if (inventory.addMoney(coin.getValue())) coin.collect();
+		}
+		
+		@Override
+		public void interactWith(Heart heart) {
+			if (strengthen(heart.getValue())) heart.collect();
 		}
 
-		
+		@Override
+		public void interactWith(CastleKey key) {
+			key.collect();
+			addItem(key.getKey(), 1);
+		}
 	}
 }
