@@ -94,7 +94,7 @@ public class Grass extends AreaEntity {
 			if (RandomGenerator.getInstance().nextDouble() < PROBABILITY_TO_DROP_HEART) {
 				getOwnerArea().registerActor(new Heart(getOwnerArea(), getCurrentMainCellCoordinates(), 20));
 			} else {
-				getOwnerArea().registerActor(new Coin(getOwnerArea(), getCurrentMainCellCoordinates(), 500));
+				getOwnerArea().registerActor(new Coin(getOwnerArea(), getCurrentMainCellCoordinates(), 50));
 			}
 		}	
 	}
