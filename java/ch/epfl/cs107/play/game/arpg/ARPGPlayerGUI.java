@@ -27,11 +27,12 @@ public class ARPGPlayerGUI implements Graphics{
 		height = canvas.getScaledHeight();
 		anchor = canvas.getTransform().getOrigin().sub(new Vector(width/2, height/2)); 
 		
-		ImageGraphics gearDisplay = new ImageGraphics(ResourcePath.getSprite("zelda/gearDisplay"), 1.5f, 1.5f, new RegionOfInterest(0, 0, 32, 32), anchor.add(new Vector(0, height - 1.75f)), 1, 0f);
+		ImageGraphics gearDisplay = new 
+				ImageGraphics(ResourcePath.getSprite("zelda/gearDisplay"), 1.5f, 1.5f, new RegionOfInterest(0, 0, 32, 32), anchor.add(new Vector(0, height - 1.75f)), 1, 0f);
 		gearDisplay.draw(canvas);		
 		
-		ImageGraphics gear = new
-		ImageGraphics(ResourcePath.getSprite(player.getUsedItemPath()), 0.75f, 0.75f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(0.4f, height - 1.4f)), 1, 0f);
+		ImageGraphics gear = new 
+				ImageGraphics(ResourcePath.getSprite(player.getUsedItemPath()), 0.75f, 0.75f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(0.4f, height - 1.4f)), 1, 0f);
 		gear.draw(canvas);
 		
 		ImageGraphics coinDisplay = new
@@ -55,8 +56,7 @@ public class ARPGPlayerGUI implements Graphics{
 			}
 		}*/
 		
-	}	
-	
+	}
 	
 	public ImageGraphics[] getMoneyDigits() {
 		String money = Integer.toString(player.getInventory().getMoney());
@@ -97,7 +97,7 @@ public class ARPGPlayerGUI implements Graphics{
 				
 			}
 		}
-		
 		return digits;
 	}
 }
+

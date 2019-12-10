@@ -2,8 +2,8 @@ package ch.epfl.cs107.play.game.arpg.actor.collectables;
 
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
+import ch.epfl.cs107.play.game.arpg.actor.ARPGItem;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
-import ch.epfl.cs107.play.game.arpg.inventory.ARPGItem;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;

@@ -35,7 +35,6 @@ public class ARPG extends RPG {
 	@Override
 	public boolean begin(Window window, FileSystem fileSystem) {
 
-
 		if (super.begin(window, fileSystem)) {
 
 			createAreas();
@@ -50,7 +49,7 @@ public class ARPG extends RPG {
 
 	@Override
 	public String getTitle() {
-		return "ARPG";
+		return "NiceTry";
 	}
 
 }

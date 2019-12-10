@@ -19,6 +19,7 @@ import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
+import ch.epfl.cs107.play.game.rpg.inventory.Inventory.Holder;
 import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
@@ -32,8 +33,6 @@ import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
-import ch.epfl.cs107.play.game.arpg.inventory.ARPGInventory;
-import ch.epfl.cs107.play.game.arpg.inventory.ARPGItem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Polygon;
 import ch.epfl.cs107.play.math.RegionOfInterest;
@@ -42,7 +41,7 @@ import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
 import ch.epfl.cs107.play.window.Keyboard;
 
-public class ARPGPlayer extends Player {
+public class ARPGPlayer extends Player implements Holder {
 	
 	private float hp;
 	private int i,j;
@@ -53,14 +52,16 @@ public class ARPGPlayer extends Player {
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
+    
     private ARPGInventory inventory;
     private ARPGPlayerGUI GUI;
-    private InventoryItem usedItem;
+    private ARPGItem usedItem;
     private List<ARPGItem> keySet;
     private int isUsingSword = 0;
     private int isUsingStaff = 0;
     private int isUsingBow = 0;
     
+//    Animations:
     Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
     Animation[] animations = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
@@ -76,7 +77,8 @@ public class ARPGPlayer extends Player {
     Sprite[][] bowSprites = RPGSprite.extractSprites("zelda/player.bow", 4, 2, 2, this, 32, 32, new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
     
     Animation[] bowAnimations = RPGSprite.createAnimations(ANIMATION_DURATION/2, bowSprites);
-	/**
+	
+    /**
 	 * Demo actor
 	 * 
 	 */
@@ -89,17 +91,18 @@ public class ARPGPlayer extends Player {
 		message.setParent(this);
 		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
-		inventory = new ARPGInventory(100, 100);
 		GUI = new ARPGPlayerGUI(this);
+		
+		inventory = new ARPGInventory(100);
+		inventory.addItem(ARPGItem.Bomb, 3);
+		inventory.addItem(ARPGItem.Sword, 1);
+		
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
-		addItem(ARPGItem.Bomb, 3);
-		addItem(ARPGItem.Sword, 1);
-		addItem(ARPGItem.CastleKey, 1);
 		
 		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
 			if (entry.getValue() > 0) {
 				usedItem = entry.getKey();
-				break;
+				return;
 			}
 		}
 
@@ -195,11 +198,11 @@ public class ARPGPlayer extends Player {
 				switchItem();
 			}
 			
-			Button space= keyboard.get(Keyboard.SPACE);
+			Button space = keyboard.get(Keyboard.SPACE);
 			if (space.isPressed()) {
 				useItem();
 			}
-	    }
+	 }
 
 	    /**
 	     * Orientate or Move this player in the given orientation if the given button is down
@@ -217,8 +220,6 @@ public class ARPGPlayer extends Player {
 	@Override
 	public void draw(Canvas canvas) {
 		GUI.draw(canvas);
-		
-		
 		
 		if(isUsingSword > 0) {
 			swordAnimations[j].draw(canvas);
@@ -311,43 +312,25 @@ public class ARPGPlayer extends Player {
 	public void interactWith(Interactable other) {
 		other.acceptInteraction(handler);
 	}
-
-    public boolean possess(InventoryItem item) {
-    	return getInventory().getItems().get(item) > 0;
-    }
     
     public void damage(int d) {
     	hp -= d;
     }
     
-    protected boolean addItem(InventoryItem item, int amount) {
-    	int i;
-		if (getInventory().getOverallWeight() + amount*item.getWeight() < getInventory().getMaxWeight()) {
-			int a = getInventory().getItems().get(item);
-			for (i = 0; i < amount - 1; i++) {
-				getInventory().getItems().replace((ARPGItem) item, a, a+1);
-				a++;
-			}
-			
-			return getInventory().getItems().replace((ARPGItem) item, a, a+1);
-		}
+    
+//    Inventory:
+	public boolean possess(ARPGItem item) {
+		// TODO Auto-generated method stub
+    	return inventory.isItemStocked(item);
+	}
+	
+	@Override
+	public boolean possess(InventoryItem item) {
+		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	protected boolean removeItem(InventoryItem item, int amount) {
-		int i;
-		if(getInventory().getItems().get(item) > 0) {
-			int a = getInventory().getItems().get(item);
-			for (i = 0; i < amount - 1; i++) {
-				getInventory().getItems().replace((ARPGItem) item, a, a-1);
-				a--;
-			}
-			return getInventory().getItems().replace((ARPGItem) item, a, a-1);
-		}
-			return false;
-	}
-	
-	protected void switchItem() {
+    
+    protected void switchItem() {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
 		while (inventory.getItems().get(keySet.get(a+1)) == 0) {
@@ -357,10 +340,10 @@ public class ARPGPlayer extends Player {
 		usedItem = keySet.get(a+1);
 	}
     
-	public void useItem() {
-		if (usedItem == ARPGItem.Bomb && getInventory().getItems().get(ARPGItem.Bomb) > 0 && !isDisplacementOccurs()) {
-			boolean b = getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
-			if (b) removeItem(ARPGItem.Bomb, 1);
+	protected void useItem() {
+		if (usedItem == ARPGItem.Bomb && getInventory().isItemStocked(usedItem) && !isDisplacementOccurs()) {
+			getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
+			getInventory().removeItem(ARPGItem.Bomb, 1);
 		}
 		if (usedItem == ARPGItem.Bow) {
 			isUsingBow = 8;
@@ -377,7 +360,6 @@ public class ARPGPlayer extends Player {
 		if (usedItem == ARPGItem.CastleKey) {
 			
 		}
-		
 	}
 	
 	public String getUsedItemPath() {
@@ -409,9 +391,7 @@ public class ARPGPlayer extends Player {
 		
 		@Override
 		public void interactWith(Grass grass) {
-			if (usedItem == ARPGItem.Sword) {
-				grass.slice();
-			}
+			grass.slice();
 		}
 		
 		@Override
@@ -420,7 +400,8 @@ public class ARPGPlayer extends Player {
 		}
 		
 		public void interactWith(Coin coin) {
-			if (inventory.addMoney(coin.getValue())) coin.collect();
+			inventory.addMoney(coin.getValue());
+			coin.collect();
 		}
 		
 		@Override
@@ -431,7 +412,7 @@ public class ARPGPlayer extends Player {
 		@Override
 		public void interactWith(CastleKey key) {
 			key.collect();
-			addItem(key.getKey(), 1);
+			inventory.addItem(key.getKey(), 1);
 		}
 	}
 }
