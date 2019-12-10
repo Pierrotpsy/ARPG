@@ -144,7 +144,5 @@ public class Bombs extends AreaEntity implements Interactor {
 			bomb.setExplode();
 			
 		}
-
-		
 	}
 }
