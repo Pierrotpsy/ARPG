@@ -1,4 +1,4 @@
-package ch.epfl.cs107.play.game.arpg.inventory;
+package ch.epfl.cs107.play.game.arpg.actor;
 
 import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 
@@ -25,24 +25,21 @@ public enum ARPGItem implements InventoryItem{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return this.name;
+		return name;
 	}
 
 	@Override
 	public float getWeight() {
-		// TODO Auto-generated method stub
-		return this.weight;
+		return weight;
 	}
 
 	@Override
 	public int getPrice() {
-		
-		return this.price;
+		return price;
 	}
+	
 	@Override
 	public String getPath() {
-		
-		return this.path;
+		return path;
 	}
 }

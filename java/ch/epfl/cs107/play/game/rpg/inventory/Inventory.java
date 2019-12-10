@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ch.epfl.cs107.play.game.arpg.actor.ARPGItem;
-
 public class Inventory {
 	
 	private int maxWeight;
@@ -21,6 +19,10 @@ public class Inventory {
 
 	public int getMaxWeight() {
 		return maxWeight;
+	}
+	
+	public int getOverallPrice() {
+		return 0;
 	}
 	
 	protected boolean addItem(InventoryItem item, int amount) {
@@ -63,4 +65,6 @@ public class Inventory {
 	    
 		public boolean possess(InventoryItem item);
 	}
+
+	
 }

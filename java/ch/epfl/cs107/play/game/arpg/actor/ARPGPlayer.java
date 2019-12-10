@@ -91,11 +91,12 @@ public class ARPGPlayer extends Player implements Holder {
 		message.setParent(this);
 		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
-		GUI = new ARPGPlayerGUI(this);
 		
-		inventory = new ARPGInventory(100);
+		inventory = new ARPGInventory(100, 100);
 		inventory.addItem(ARPGItem.Bomb, 3);
 		inventory.addItem(ARPGItem.Sword, 1);
+		
+		GUI = new ARPGPlayerGUI(this);
 		
 		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
 		
@@ -105,7 +106,6 @@ public class ARPGPlayer extends Player implements Holder {
 				return;
 			}
 		}
-
 		resetMotion();
 	}
 	 
@@ -341,9 +341,9 @@ public class ARPGPlayer extends Player implements Holder {
 	}
     
 	protected void useItem() {
-		if (usedItem == ARPGItem.Bomb && getInventory().isItemStocked(usedItem) && !isDisplacementOccurs()) {
+		if (usedItem == ARPGItem.Bomb && inventory.isItemStocked(usedItem)) {
 			getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
-			getInventory().removeItem(ARPGItem.Bomb, 1);
+			inventory.removeItem(ARPGItem.Bomb, 1);
 		}
 		if (usedItem == ARPGItem.Bow) {
 			isUsingBow = 8;

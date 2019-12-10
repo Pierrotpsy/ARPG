@@ -1,7 +1,9 @@
-package ch.epfl.cs107.play.game.arpg.inventory;
+package ch.epfl.cs107.play.game.arpg.actor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import ch.epfl.cs107.play.game.rpg.inventory.Inventory;
 import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 
@@ -62,4 +64,39 @@ public class ARPGInventory extends Inventory {
 		return items;
 	}
 
+	
+	public boolean addItem(ARPGItem item, int amount) {
+		int i;
+		if (getOverallWeight() + amount*item.getWeight() < getMaxWeight()) {
+			int a = items.get(item);
+			for (i = 0; i < amount; i++) {
+				items.replace((ARPGItem) item, a, a+1);
+				a++;
+			}
+			
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean removeItem(ARPGItem item, int amount) {
+		int i;
+		if(items.get(item) > 0) {
+			int a = items.get(item);
+			for (i = 0; i < amount; i++) {
+				items.replace((ARPGItem) item, a, a-1);
+				a--;
+			}
+			return true;
+		}
+			return false;
+
+	}
+
+
+	
+	public boolean isItemStocked(ARPGItem item) {
+		
+		return items.get(item) > 0;
+	}
 }
