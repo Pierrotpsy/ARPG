@@ -418,6 +418,7 @@ public class ARPGPlayer extends Player {
 		public void interactWith(Bombs bomb) {
 			bomb.setExplode();
 		}
+		
 		public void interactWith(Coin coin) {
 			if (inventory.addMoney(coin.getValue())) coin.collect();
 		}
