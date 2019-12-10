@@ -409,7 +409,9 @@ public class ARPGPlayer extends Player {
 		
 		@Override
 		public void interactWith(Grass grass) {
-			grass.slice();
+			if (usedItem == ARPGItem.Sword) {
+				grass.slice();
+			}
 		}
 		
 		@Override
