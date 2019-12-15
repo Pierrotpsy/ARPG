@@ -6,6 +6,7 @@ import ch.epfl.cs107.play.game.areagame.actor.Foreground;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.arpg.actor.Bombs;
 import ch.epfl.cs107.play.game.arpg.actor.Grass;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.FlameSkull;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -34,5 +35,6 @@ public class Road extends ARPGArea {
         		registerActor(new Grass(this, new DiscreteCoordinates(i, j)));
         	}
         }
+        registerActor(new FlameSkull(this, Orientation.RIGHT, new DiscreteCoordinates(8,10)));
 	}
 }

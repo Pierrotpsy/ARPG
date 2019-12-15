@@ -14,12 +14,12 @@ public class ARPGInventory extends Inventory {
 	public ARPGInventory(int maxWeight, int initialMoney) {
 		super(maxWeight);
 		money = initialMoney;
-		getItems().put(ARPGItem.Arrow, 0);
-		getItems().put(ARPGItem.Bow, 0);
-		getItems().put(ARPGItem.Sword, 0);
-		getItems().put(ARPGItem.Bomb, 0);
-		getItems().put(ARPGItem.Staff, 0);
-		getItems().put(ARPGItem.CastleKey, 0);
+		items.put(ARPGItem.Arrow, 0);
+		items.put(ARPGItem.Bow, 0);
+		items.put(ARPGItem.Sword, 0);
+		items.put(ARPGItem.Bomb, 0);
+		items.put(ARPGItem.Staff, 0);
+		items.put(ARPGItem.CastleKey, 0);
 	}
 	
 	@Override

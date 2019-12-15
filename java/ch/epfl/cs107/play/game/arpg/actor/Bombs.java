@@ -13,6 +13,7 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -24,7 +25,9 @@ public class Bombs extends AreaEntity implements Interactor {
 	private final static int ANIMATION_DURATION = 8;
 	private int timer;
 	private RPGSprite sprite = new RPGSprite("zelda/bomb", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
-	private boolean isExploding = false;
+	private int isExploding = 0;
+	private boolean safety = false;
+	private boolean isCellSpaceTaken = true;
 	private ARPGBombHandler handler = new ARPGBombHandler();
 	
 	
@@ -44,19 +47,17 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public boolean takeCellSpace() {
-		return true;
+		return isCellSpaceTaken;
 	}
 
 	@Override
 	public boolean isCellInteractable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isViewInteractable() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -66,10 +67,9 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public void draw(Canvas canvas) {
-		if (isExploding) {
+		if (isExploding > 0) {
 			animation.draw(canvas);
-
-		} else {
+		} else if (isCellSpaceTaken){
 			sprite.draw(canvas);
 		}
 		
@@ -79,15 +79,26 @@ public class Bombs extends AreaEntity implements Interactor {
 	public void update(float deltaTime) {
 		if (timer > 0) {
 			timer -=0.1 ;
-
-		} else if (timer == 0 || isExploding == true) {
-			isExploding = true;
+		} 
+		
+		if (isExploding > 0) {
+			safety = false;
+			isExploding--;
+		}
+		if (timer == 0) {
+			isExploding = 8;
+			safety = true;
+			isCellSpaceTaken = false;
+			timer = -1;
+		}
+		
+		if (isExploding > 0) {
 			animation.update(deltaTime);
-			getOwnerArea().unregisterActor(this);
-			
-			
 		} else animation.reset();
 		
+		if (isExploding == 0 && !isCellSpaceTaken) {
+			getOwnerArea().unregisterActor(this);
+		}
 		super.update(deltaTime);
 	}
 
@@ -98,18 +109,12 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public boolean wantsCellInteraction() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean wantsViewInteraction() {
-		if(isExploding) {
-			return true;
-
-		}
-		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -119,30 +124,44 @@ public class Bombs extends AreaEntity implements Interactor {
 	}
 	
 	public void setExplode() {
-		isExploding = true;
+		timer = 0;
 	}
 	
 	private class ARPGBombHandler implements ARPGInteractionVisitor {
 		
 		@Override
 		public void interactWith(Grass grass) {
-			grass.slice();
+			if (isExploding > 0 && safety) {
+				grass.slice();
+			}
 		}
 		
 		@Override
 		public void interactWith(ARPGPlayer player) {
-			player.damage(20);
+			if (isExploding > 0 && safety) {
+				player.damage(20);			
+			}
 		}
 
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
-			((ARPGCollectableAreaEntity) object).collect();
+			if (isExploding > 0 && safety) {
+				((ARPGCollectableAreaEntity) object).collect();		
+			}
 		}
 
 		@Override
 		public void interactWith(Bombs bomb) {
-			bomb.setExplode();
-			
+			if (isExploding > 0 && safety) {
+				bomb.setExplode();	
+			}	
+		}
+		
+		@Override
+		public void interactWith(ARPGMobs mob) {
+			if (isExploding > 0 && mob.isVulnerableFire() && safety) {
+				mob.damage(100);
+			}
 		}
 	}
 }

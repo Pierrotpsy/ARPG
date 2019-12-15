@@ -75,13 +75,16 @@ public abstract class MovableAreaEntity extends AreaEntity {
      * @return (boolean): indicate if the move is initiated
      */
     protected final boolean move(int frameForMove, int startingFrame){
+    	//System.out.println(!displacementOccurs || isTargetReached());
+    	System.out.println(!displacementOccurs);
+    	System.out.println(isTargetReached());
     	if(!displacementOccurs || isTargetReached() ) {
-
+    		
         	List<DiscreteCoordinates> leavingCells = getLeftCells();
         	List<DiscreteCoordinates> enteringCells = getEnteringCells();
 
             if(getOwnerArea().enterAreaCells(this, enteringCells) && getOwnerArea().leaveAreaCells(this, leavingCells)){
-
+            	System.out.println("ok");
             	leftCells = leavingCells;
             	enteredCells = enteringCells;
             	
@@ -93,11 +96,14 @@ public abstract class MovableAreaEntity extends AreaEntity {
                 originPosition = getPosition();
                 targetPosition = getPosition().add(getOrientation().toVector());
 
-                increasePositionOf(startingFrame);
+                //increasePositionOf(startingFrame);
                 
                 return true;
             }
+            System.out.println("/ok/");
         }
+    	increasePositionOf(startingFrame);
+    	System.out.println("//");
         return false;
     }
     

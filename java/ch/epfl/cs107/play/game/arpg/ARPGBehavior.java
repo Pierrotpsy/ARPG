@@ -1,6 +1,7 @@
 package ch.epfl.cs107.play.game.arpg;
 
 import ch.epfl.cs107.play.game.areagame.AreaBehavior;
+import ch.epfl.cs107.play.game.areagame.actor.FlyableEntity;
 import ch.epfl.cs107.play.game.areagame.actor.Interactable;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
@@ -10,19 +11,21 @@ import ch.epfl.cs107.play.window.Window;
 public class ARPGBehavior extends AreaBehavior {
 	public enum ARPGCellType{
 		//https://stackoverflow.com/questions/25761438/understanding-bufferedimage-getrgb-output-values
-		NULL(0, false),
-		WALL(-16777216, false),
-		IMPASSABLE(-8750470, false),
-		INTERACT(-256, true),
-		DOOR(-195580, true),
-		WALKABLE(-1, true);
+		NULL(0, false, false),
+		WALL(-16777216, false, false),
+		IMPASSABLE(-8750470, false, true),
+		INTERACT(-256, true, true),
+		DOOR(-195580, true, true),
+		WALKABLE(-1, true, true);
 
 		final int type;
 		final boolean isWalkable;
+		final boolean isFlyable;
 
-		ARPGCellType(int type, boolean isWalkable){
+		ARPGCellType(int type, boolean isWalkable, boolean isFlyable){
 			this.type = type;
 			this.isWalkable = isWalkable;
+			this.isFlyable = isFlyable;
 		}
 
 		public static ARPGCellType toType(int type){
@@ -82,6 +85,9 @@ public class ARPGBehavior extends AreaBehavior {
 
 		@Override
 		protected boolean canEnter(Interactable entity) {
+			if (entity instanceof FlyableEntity) {
+				return !this.hasNonTraversableContent() && type.isFlyable;
+			}
 			return !this.hasNonTraversableContent() && type.isWalkable;
 	    }
 

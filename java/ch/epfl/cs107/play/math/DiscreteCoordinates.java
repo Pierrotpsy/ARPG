@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.cs107.play.game.areagame.actor.Orientation;
+
 /**
  * DiscreteCoordinates assume a standard coordinate system.
  * Assume every unit the coordinate axis are graduated.
@@ -83,6 +85,16 @@ public final class DiscreteCoordinates implements Serializable {
     	result.add(upRight());
     	result.add(down());
     	result.add(downRight());
+    	return result;
+    }
+    
+    public List<DiscreteCoordinates> getNumberInFront(Orientation orientation, int i){
+    	
+    	List<DiscreteCoordinates> result = new ArrayList<DiscreteCoordinates>();
+    	int a;
+    	for (a = 1; a < i + 1; a++) {
+    		result.add(new DiscreteCoordinates(x, y).jump(orientation.toVector().mul(a)));
+    	}
     	return result;
     }
     

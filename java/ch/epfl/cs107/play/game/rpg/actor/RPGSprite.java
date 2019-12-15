@@ -167,6 +167,19 @@ public class RPGSprite extends Sprite {
 		return sprites;
 	}
 	
+	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight, Vector anchor){  	
+
+		Sprite[][] sprites = new Sprite[1][nbFrames];
+
+		for(int i = 0; i < nbFrames; i++){
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+		}
+		return sprites;
+	}
+	
 	/**
 	 * Extracts from an image the sprites corresponding to a given orientation
 	 * the returned array has 4 entry (one per orientation)

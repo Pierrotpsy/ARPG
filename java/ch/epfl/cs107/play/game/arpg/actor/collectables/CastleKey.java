@@ -33,24 +33,17 @@ public class CastleKey extends ARPGCollectableAreaEntity implements InventoryIte
 	}
 	
 	@Override
-	public void update(float deltaTime) {
-	}
-
-	@Override
 	public float getWeight() {
-		// TODO Auto-generated method stub
 		return this.CastleKey.getWeight();
 	}
 
 	@Override
 	public int getPrice() {
-		// TODO Auto-generated method stub
 		return this.CastleKey.getPrice();
 	}
 
 	@Override
 	public String getPath() {
-		// TODO Auto-generated method stub
 		return this.CastleKey.getPath();
 	}
 	

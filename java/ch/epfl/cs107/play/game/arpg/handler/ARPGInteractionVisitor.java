@@ -8,6 +8,7 @@ import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
 import ch.epfl.cs107.play.game.rpg.handler.RPGInteractionVisitor;
 
 public interface ARPGInteractionVisitor extends RPGInteractionVisitor {
@@ -32,6 +33,10 @@ public interface ARPGInteractionVisitor extends RPGInteractionVisitor {
     }
 	
 	default void interactWith(CastleKey key) {
+		
+	}
+	
+	default void interactWith(ARPGMobs mob) {
 		
 	}
 }

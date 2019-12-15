@@ -38,8 +38,8 @@ public class ARPG extends RPG {
 		if (super.begin(window, fileSystem)) {
 
 			createAreas();
-			setCurrentArea("zelda/Ferme", true);
-			initPlayer(new ARPGPlayer(getCurrentArea(), Orientation.DOWN, new DiscreteCoordinates(6, 10)));
+			setCurrentArea("zelda/RouteChateau", true);
+			initPlayer(new ARPGPlayer(getCurrentArea(), Orientation.DOWN, new DiscreteCoordinates(9, 7)));
 			return true;
 		}
 		return false;
@@ -49,7 +49,7 @@ public class ARPG extends RPG {
 
 	@Override
 	public String getTitle() {
-		return "NiceTry";
+		return "ARPG";
 	}
 
 }

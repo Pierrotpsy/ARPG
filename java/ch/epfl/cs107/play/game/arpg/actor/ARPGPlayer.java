@@ -31,6 +31,7 @@ import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
 import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -45,7 +46,6 @@ public class ARPGPlayer extends Player implements Holder {
 	
 	private float hp;
 	private int i,j;
-	private TextGraphics message;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	private Sprite sprite;
@@ -66,15 +66,15 @@ public class ARPGPlayer extends Player implements Holder {
 
     Animation[] animations = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
     
-    Sprite[][] swordSprites = RPGSprite.extractSprites("zelda/player.sword", 4, 2, 2, this, 32, 32, new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
+    Sprite[][] swordSprites = RPGSprite.extractSprites("zelda/player.sword", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
     
     Animation[] swordAnimations = RPGSprite.createAnimations(ANIMATION_DURATION/2, swordSprites);
     
-    Sprite[][] staffSprites = RPGSprite.extractSprites("zelda/player.staff_water", 4, 2, 2, this, 32, 32, new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
+    Sprite[][] staffSprites = RPGSprite.extractSprites("zelda/player.staff_water", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
     
     Animation[] staffAnimations = RPGSprite.createAnimations(ANIMATION_DURATION/2, staffSprites);
     
-    Sprite[][] bowSprites = RPGSprite.extractSprites("zelda/player.bow", 4, 2, 2, this, 32, 32, new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
+    Sprite[][] bowSprites = RPGSprite.extractSprites("zelda/player.bow", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), new Orientation[] {Orientation.DOWN, Orientation.UP, Orientation.RIGHT, Orientation.LEFT});
     
     Animation[] bowAnimations = RPGSprite.createAnimations(ANIMATION_DURATION/2, bowSprites);
 	
@@ -85,11 +85,8 @@ public class ARPGPlayer extends Player implements Holder {
 	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(owner, orientation, coordinates);
 		this.hp = 100;
-		message = new TextGraphics(Integer.toString((int)hp), 0.4f, Color.BLUE);
 		HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0.1f, 1.8f), new Vector((float) 1, 1.8f), new Vector((float) 1, 1.7f), new Vector( 0.1f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
 		HPbarGreen.setParent(this);
-		message.setParent(this);
-		message.setAnchor(new Vector(0.2f, 1.7f));
 		sprite = sprites[0][0];
 		
 		inventory = new ARPGInventory(100, 100);
@@ -122,11 +119,6 @@ public class ARPGPlayer extends Player implements Holder {
 			 HPbarRed.setParent(this);
 		 }
 		 
-		 
-		 if (hp > 0) {
-				message.setText(Integer.toString((int)hp));
-				
-			}
 		 if (hp < 0) {
 			 hp = 0.f;
 			 HPbarGreen = null;
@@ -134,6 +126,7 @@ public class ARPGPlayer extends Player implements Holder {
 			 HPbarRed = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector(0f, 1.7f)), Color.RED, Color.BLACK, 0.01f);
 			 HPbarRed.setParent(this);
 		 }
+		 
 			Keyboard keyboard= getOwnerArea().getKeyboard();
 	        moveOrientate(Orientation.LEFT, keyboard.get(Keyboard.LEFT));
 	        moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
@@ -202,13 +195,9 @@ public class ARPGPlayer extends Player implements Holder {
 			if (space.isPressed()) {
 				useItem();
 			}
+			
 	 }
 
-	    /**
-	     * Orientate or Move this player in the given orientation if the given button is down
-	     * @param orientation (Orientation): given orientation, not null
-	     * @param b (Button): button corresponding to the given orientation, not null
-	     */
 	    private void moveOrientate(Orientation orientation, Button b){
 	    
 	        if(b.isDown()) {
@@ -256,7 +245,6 @@ public class ARPGPlayer extends Player implements Holder {
 		}
 	}
 
-	///Ghost implements Interactable
 
 	@Override
 	public boolean takeCellSpace() {
@@ -289,10 +277,13 @@ public class ARPGPlayer extends Player implements Holder {
 
 	@Override
 	public boolean wantsCellInteraction() {
-
 		return true;
 	}
-
+	
+	public ARPGPlayer getPlayer() {
+		return this;
+	}
+	
 	@Override
 	public boolean wantsViewInteraction() {
 		Keyboard keyboard= getOwnerArea().getKeyboard();
@@ -320,13 +311,11 @@ public class ARPGPlayer extends Player implements Holder {
     
 //    Inventory:
 	public boolean possess(ARPGItem item) {
-		// TODO Auto-generated method stub
     	return inventory.isItemStocked(item);
 	}
 	
 	@Override
 	public boolean possess(InventoryItem item) {
-		// TODO Auto-generated method stub
 		return false;
 	}
     
@@ -389,6 +378,12 @@ public class ARPGPlayer extends Player implements Holder {
 			}
 	    }
 		
+		public void interactWith(ARPGMobs mob) {
+			if(isUsingSword > 0 && mob.isVulnerablePhysical()) {
+				mob.damage(20);
+			}
+		}
+		
 		@Override
 		public void interactWith(Grass grass) {
 			grass.slice();
@@ -408,11 +403,12 @@ public class ARPGPlayer extends Player implements Holder {
 		public void interactWith(Heart heart) {
 			if (strengthen(heart.getValue())) heart.collect();
 		}
-
+		
 		@Override
 		public void interactWith(CastleKey key) {
 			key.collect();
 			inventory.addItem(key.getKey(), 1);
 		}
 	}
+	
 }
