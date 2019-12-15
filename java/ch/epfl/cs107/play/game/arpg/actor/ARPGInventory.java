@@ -65,7 +65,7 @@ public class ARPGInventory extends Inventory {
 	}
 
 	
-	public boolean addItem(ARPGItem item, int amount) {
+	protected boolean addItem(ARPGItem item, int amount) {
 		int i;
 		if (getOverallWeight() + amount*item.getWeight() < getMaxWeight()) {
 			int a = items.get(item);
@@ -79,7 +79,7 @@ public class ARPGInventory extends Inventory {
 		return false;
 	}
 	
-	public boolean removeItem(ARPGItem item, int amount) {
+	protected boolean removeItem(ARPGItem item, int amount) {
 		int i;
 		if(items.get(item) > 0) {
 			int a = items.get(item);

@@ -96,13 +96,12 @@ public abstract class MovableAreaEntity extends AreaEntity {
                 originPosition = getPosition();
                 targetPosition = getPosition().add(getOrientation().toVector());
 
-                //increasePositionOf(startingFrame);
+                increasePositionOf(startingFrame);
                 
                 return true;
             }
             System.out.println("/ok/");
         }
-    	increasePositionOf(startingFrame);
     	System.out.println("//");
         return false;
     }

@@ -28,15 +28,15 @@ public class ARPGPlayerGUI implements Graphics{
 		anchor = canvas.getTransform().getOrigin().sub(new Vector(width/2, height/2)); 
 		
 		ImageGraphics gearDisplay = new 
-				ImageGraphics(ResourcePath.getSprite("zelda/gearDisplay"), 1.5f, 1.5f, new RegionOfInterest(0, 0, 32, 32), anchor.add(new Vector(0, height - 1.75f)), 1, 0f);
+				ImageGraphics(ResourcePath.getSprite("zelda/gearDisplay"), 1.5f, 1.5f, new RegionOfInterest(0, 0, 32, 32), anchor.add(new Vector(0, height - 1.75f)), 1, Float.MAX_VALUE);
 		gearDisplay.draw(canvas);		
 		
 		ImageGraphics gear = new 
-				ImageGraphics(ResourcePath.getSprite(player.getUsedItemPath()), 0.75f, 0.75f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(0.4f, height - 1.4f)), 1, 0f);
+				ImageGraphics(ResourcePath.getSprite(player.getUsedItemPath()), 0.75f, 0.75f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(0.4f, height - 1.4f)), 1, Float.MAX_VALUE);
 		gear.draw(canvas);
 		
 		ImageGraphics coinDisplay = new
-		ImageGraphics(ResourcePath.getSprite("zelda/coinsDisplay"), 4f, 2f, new RegionOfInterest(0, 0, 64, 32), anchor.add(new Vector(0f, 0f)), 1, 0f);
+		ImageGraphics(ResourcePath.getSprite("zelda/coinsDisplay"), 4f, 2f, new RegionOfInterest(0, 0, 64, 32), anchor.add(new Vector(0f, 0f)), 1, Float.MAX_VALUE);
 		coinDisplay.draw(canvas);
 		
 		getMoneyDigits()[0].draw(canvas);
@@ -65,34 +65,34 @@ public class ARPGPlayerGUI implements Graphics{
 		for (int i = 0; i < money.length(); i++) {
 			switch (money.charAt(i)) {
 				case '1':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '2':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '3':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(32, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(32, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '4':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(48, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(48, 0, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '5':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '6':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '7':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(32, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(32, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '8':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(48, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(48, 16, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '9':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 32, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(0, 32, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				case '0':
-					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 32, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, 0f);
+					digits[i] = new ImageGraphics(ResourcePath.getSprite("zelda/digits"), 1f, 1f, new RegionOfInterest(16, 32, 16, 16), anchor.add(new Vector(1.3f + 0.75f*i, 0.55f)), 1, Float.MAX_VALUE);
 					break;
 				
 			}

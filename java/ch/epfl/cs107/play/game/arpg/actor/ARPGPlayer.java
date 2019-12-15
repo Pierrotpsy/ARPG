@@ -379,7 +379,7 @@ public class ARPGPlayer extends Player implements Holder {
 	    }
 		
 		public void interactWith(ARPGMobs mob) {
-			if(isUsingSword > 0 && mob.isVulnerablePhysical()) {
+			if(isUsingSword > 7 && mob.isVulnerablePhysical()) {
 				mob.damage(20);
 			}
 		}

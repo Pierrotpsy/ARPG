@@ -75,16 +75,14 @@ public final class DiscreteCoordinates implements Serializable {
      * Return the neighbours coordinates
      * @return (float): the neighbours
      */
-    public List<DiscreteCoordinates> getNeighbours(){
+    public List<DiscreteCoordinates> getNeighboursInRadius(int i){
     	List<DiscreteCoordinates> result = new ArrayList<DiscreteCoordinates>();
-    	result.add(left());
-    	result.add(upLeft());
-    	result.add(up());
-    	result.add(downLeft());
-    	result.add(right());
-    	result.add(upRight());
-    	result.add(down());
-    	result.add(downRight());
+    	int a,b;
+    	for (a = 0; a < 2*i + 1; a++) {
+    		for (b = 0; b < 2*i + 1; b++) {
+    			result.add(new DiscreteCoordinates(x - i + b, y - i + a));
+    		}
+    	}
     	return result;
     }
     

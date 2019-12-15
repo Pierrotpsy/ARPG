@@ -85,11 +85,11 @@ public class Bombs extends AreaEntity implements Interactor {
 			safety = false;
 			isExploding--;
 		}
-		if (timer == 0) {
+		
+		if (timer == 0 && isCellSpaceTaken) {
 			isExploding = 8;
 			safety = true;
 			isCellSpaceTaken = false;
-			timer = -1;
 		}
 		
 		if (isExploding > 0) {
@@ -99,12 +99,13 @@ public class Bombs extends AreaEntity implements Interactor {
 		if (isExploding == 0 && !isCellSpaceTaken) {
 			getOwnerArea().unregisterActor(this);
 		}
+		
 		super.update(deltaTime);
 	}
 
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
-		return getCurrentMainCellCoordinates().getNeighbours();
+		return getCurrentMainCellCoordinates().getNeighboursInRadius(1);
 	}
 
 	@Override
