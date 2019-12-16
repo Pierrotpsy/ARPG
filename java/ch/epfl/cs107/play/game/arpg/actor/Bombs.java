@@ -31,7 +31,7 @@ public class Bombs extends AreaEntity implements Interactor {
 	private ARPGBombHandler handler = new ARPGBombHandler();
 	
 	
-	Sprite[][] sprites = RPGSprite.extractSprites("zelda/explosion", 7, 1.5f, 1.5f, this, 32, 32);
+	Sprite[][] sprites = RPGSprite.extractSprites("zelda/explosion", 7, 1.5f, 1.5f, this, 32, 32, "horizontal");
 
 	Animation animation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, sprites);
 	
@@ -52,7 +52,7 @@ public class Bombs extends AreaEntity implements Interactor {
 
 	@Override
 	public boolean isCellInteractable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class Bombs extends AreaEntity implements Interactor {
 		
 		@Override
 		public void interactWith(ARPGMobs mob) {
-			if (isExploding > 0 && mob.isVulnerableFire() && safety) {
+			if (isExploding > 0 && mob.isVulnerablePhysical() && safety) {
 				mob.damage(100);
 			}
 		}

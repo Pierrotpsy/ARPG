@@ -6,51 +6,45 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import ch.epfl.cs107.play.game.actor.ImageGraphics;
 import ch.epfl.cs107.play.game.actor.ShapeGraphics;
-import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
-import ch.epfl.cs107.play.game.areagame.actor.CollectableAreaEntity;
 import ch.epfl.cs107.play.game.areagame.actor.Interactable;
-import ch.epfl.cs107.play.game.areagame.actor.MovableAreaEntity;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
-import ch.epfl.cs107.play.game.rpg.inventory.Inventory.Holder;
-import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
-import ch.epfl.cs107.play.game.areagame.io.ResourcePath;
-import ch.epfl.cs107.play.game.arpg.ARPG;
 import ch.epfl.cs107.play.game.arpg.ARPGPlayerGUI;
-import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
-import ch.epfl.cs107.play.game.arpg.area.ARPGArea;
+import ch.epfl.cs107.play.game.arpg.actor.projectiles.Arrow;
+import ch.epfl.cs107.play.game.arpg.actor.projectiles.MagicWaterProjectile;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Polygon;
-import ch.epfl.cs107.play.math.RegionOfInterest;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
 import ch.epfl.cs107.play.window.Keyboard;
 
-public class ARPGPlayer extends Player implements Holder {
+public class ARPGPlayer extends Player {
 	
 	private float hp;
 	private int i,j;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
-	private Sprite sprite;
+	
 	/// Animation duration in frame number
     private final static int ANIMATION_DURATION = 8;
+    private final static int ARROW_MAX_DISTANCE = 6;
+    private final static int ARROW_VELOCITY = 2;
+    private final static int MAGIC_MAX_DISTANCE = 6;
+    private final static int MAGIC_VELOCITY = 2;
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
     
     private ARPGInventory inventory;
@@ -60,7 +54,15 @@ public class ARPGPlayer extends Player implements Holder {
     private int isUsingSword = 0;
     private int isUsingStaff = 0;
     private int isUsingBow = 0;
-    
+    private enum states {
+		IDLE,
+		SWORDATTACK,
+		BOWATTACK,
+		STAFFATTACK,
+		USINGCASTLEKEY;
+		
+	}
+	private states state;
 //    Animations:
     Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
@@ -84,14 +86,14 @@ public class ARPGPlayer extends Player implements Holder {
 	 */
 	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(owner, orientation, coordinates);
-		this.hp = 100;
-		HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0.1f, 1.8f), new Vector((float) 1, 1.8f), new Vector((float) 1, 1.7f), new Vector( 0.1f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
-		HPbarGreen.setParent(this);
-		sprite = sprites[0][0];
-		
-		inventory = new ARPGInventory(100, 100);
-		inventory.addItem(ARPGItem.Bomb, 3);
+		this.hp = 100;		
+		inventory = new ARPGInventory(100, 0);
+		inventory.addItem(ARPGItem.CastleKey, 1);
 		inventory.addItem(ARPGItem.Sword, 1);
+		inventory.addItem(ARPGItem.Bow, 1);
+		inventory.addItem(ARPGItem.Arrow, 10);
+		inventory.addItem(ARPGItem.Staff, 1);
+		inventory.addItem(ARPGItem.Bomb, 10);
 		
 		GUI = new ARPGPlayerGUI(this);
 		
@@ -103,14 +105,54 @@ public class ARPGPlayer extends Player implements Holder {
 				return;
 			}
 		}
+		state = states.IDLE;
 		resetMotion();
 	}
 	 
-	 @Override
-	    public void update(float deltaTime) {
-		 super.update(deltaTime);
-		 
-		 if (hp > 0) {
+	@Override
+	public void update(float deltaTime) {
+		super.update(deltaTime);
+		//updateState();
+		updateHP();
+		updateAnimations(deltaTime);
+		
+		Keyboard keyboard= getOwnerArea().getKeyboard();
+		if (state == states.IDLE) {
+			moveOrientate(Orientation.LEFT, keyboard.get(Keyboard.LEFT));
+			moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
+			moveOrientate(Orientation.RIGHT, keyboard.get(Keyboard.RIGHT));
+			moveOrientate(Orientation.DOWN, keyboard.get(Keyboard.DOWN));
+		}
+		
+		Button tab = keyboard.get(Keyboard.TAB);
+		if (tab.isPressed()) {
+			switchItem();
+		}
+			
+		Button space = keyboard.get(Keyboard.SPACE);
+		if (space.isPressed()) {
+			useItem();
+		}
+			
+	}
+	
+    private void updateState() {
+    	switch (state) {
+	    	case IDLE:
+	    		break;
+	    	case SWORDATTACK:
+	    		break;
+	    	case STAFFATTACK:
+	    		break;
+	    	case BOWATTACK:
+	    		break;
+	    	case USINGCASTLEKEY:
+	    		break;
+    	}
+    }
+    
+    private void updateHP() {
+    	if (hp > 0) {
 			 HPbarGreen = null;
 			 HPbarRed = null;
 			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/100f, 1.8f), new Vector((float) hp/100f, 1.7f), new Vector( 0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
@@ -126,86 +168,73 @@ public class ARPGPlayer extends Player implements Holder {
 			 HPbarRed = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector(0f, 1.7f)), Color.RED, Color.BLACK, 0.01f);
 			 HPbarRed.setParent(this);
 		 }
-		 
-			Keyboard keyboard= getOwnerArea().getKeyboard();
-	        moveOrientate(Orientation.LEFT, keyboard.get(Keyboard.LEFT));
-	        moveOrientate(Orientation.UP, keyboard.get(Keyboard.UP));
-	        moveOrientate(Orientation.RIGHT, keyboard.get(Keyboard.RIGHT));
-	        moveOrientate(Orientation.DOWN, keyboard.get(Keyboard.DOWN));
-	        
-	        switch(getOrientation()) {
-	        	case LEFT :
-	        		i = 3;
-	        		break;
-	        		
-	        	case RIGHT :
-	        		i =1;
-	        		break;
-	        		
-	        	case UP :
-	        		i = 0;
-	        		break;
-	        		
-	        	case DOWN :
-	        		i = 2;
-	        		break;
-	        }
-	        
-	        if (isDisplacementOccurs()) {
-		        animations[i].update(deltaTime);
-	        } else animations[i].reset();
-	       
-	        switch(getOrientation()) {
-	        	case DOWN:
-	        		j = 2;
-	        		break;
-	        	case UP:
-	        		j = 0;
-	        		break;
-	        	case RIGHT:
-	        		j = 1;
-	        		break;
-	        	case LEFT:
-	        		j = 3;
-	        		break;
-	        }
-	        
-	        if (isUsingSword > 0) {
-	        	swordAnimations[j].update(deltaTime);
-	        	isUsingSword--;
-	        } else swordAnimations[j].reset();
-	        
-	        if (isUsingStaff > 0) {
-	        	staffAnimations[j].update(deltaTime);
-	        	isUsingStaff--;
-	        } else staffAnimations[j].reset();
-	        
-	        if (isUsingBow > 0) {
-	        	bowAnimations[j].update(deltaTime);
-	        	isUsingBow--;
-	        } else bowAnimations[j].reset();
-	       
-	        
-	        Button tab = keyboard.get(Keyboard.TAB);
-			if (tab.isPressed()) {
-				switchItem();
-			}
-			
-			Button space = keyboard.get(Keyboard.SPACE);
-			if (space.isPressed()) {
-				useItem();
-			}
-			
-	 }
-
-	    private void moveOrientate(Orientation orientation, Button b){
-	    
-	        if(b.isDown()) {
-	            if(getOrientation() == orientation) move(ANIMATION_DURATION);
-	            else orientate(orientation);
-	        }
-	    }
+    }
     
+    private void updateAnimations(float deltaTime) {
+
+		
+        switch(getOrientation()) {
+        	case LEFT :
+        		i = 3;
+        		break;
+        		
+        	case RIGHT :
+        		i =1;
+        		break;
+        		
+        	case UP :
+        		i = 0;
+        		break;
+        		
+        	case DOWN :
+        		i = 2;
+        		break;
+        }
+        
+        if (isDisplacementOccurs()) {
+	        animations[i].update(deltaTime);
+        } else animations[i].reset();
+       
+        switch(getOrientation()) {
+        	case DOWN:
+        		j = 2;
+        		break;
+        	case UP:
+        		j = 0;
+        		break;
+        	case RIGHT:
+        		j = 1;
+        		break;
+        	case LEFT:
+        		j = 3;
+        		break;
+        }
+        
+        if (isUsingSword > 0) {
+        	swordAnimations[j].update(deltaTime);
+        	isUsingSword--;
+        } else {
+        	state = states.IDLE;
+        	swordAnimations[j].reset();
+        }
+        
+        if (isUsingStaff > 0) {
+        	staffAnimations[j].update(deltaTime);
+        	isUsingStaff--;
+        } else {
+        	state = states.IDLE;
+        	staffAnimations[j].reset();
+        }
+        
+        if (isUsingBow > 0) {
+        	bowAnimations[j].update(deltaTime);
+        	isUsingBow--;
+        } else {
+        	state = states.IDLE;
+        	bowAnimations[j].reset();
+        }
+        
+    }
 	@Override
 	public void draw(Canvas canvas) {
 		GUI.draw(canvas);
@@ -226,9 +255,17 @@ public class ARPGPlayer extends Player implements Holder {
 			HPbarRed.draw(canvas);
 
 		}
-		//message.draw(canvas);
 	}
 
+
+	private void moveOrientate(Orientation orientation, Button b){
+	    
+		if(b.isDown()) {
+			if(getOrientation() == orientation) move(ANIMATION_DURATION);
+	        	else orientate(orientation);
+	        }
+	}
+	
 	public boolean isWeak() {
 		return (hp <= 0.f);
 	}
@@ -288,12 +325,9 @@ public class ARPGPlayer extends Player implements Holder {
 	public boolean wantsViewInteraction() {
 		Keyboard keyboard= getOwnerArea().getKeyboard();
 		Button e = keyboard.get(Keyboard.E);
-		Button space = keyboard.get(Keyboard.SPACE);
-		
-		if (e.isPressed() && usedItem == ARPGItem.Sword) {
-			isUsingSword = 8;
+		if (e.isPressed() || state == states.SWORDATTACK) {
 			return true;
-		} else if (space.isPressed() && usedItem == ARPGItem.CastleKey) {
+		} else if (state == states.USINGCASTLEKEY) {
 			return true;
 		}
 		return false;
@@ -314,11 +348,6 @@ public class ARPGPlayer extends Player implements Holder {
     	return inventory.isItemStocked(item);
 	}
 	
-	@Override
-	public boolean possess(InventoryItem item) {
-		return false;
-	}
-    
     protected void switchItem() {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
@@ -331,23 +360,32 @@ public class ARPGPlayer extends Player implements Holder {
     
 	protected void useItem() {
 		if (usedItem == ARPGItem.Bomb && inventory.isItemStocked(usedItem)) {
-			getOwnerArea().registerActor(new Bombs(this.getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
-			inventory.removeItem(ARPGItem.Bomb, 1);
+			if (getOwnerArea().canEnterAreaCells(new Bombs(getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100), Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector())))) {
+				getOwnerArea().registerActor(new Bombs(getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100));
+				inventory.removeItem(ARPGItem.Bomb, 1);
+			}
 		}
-		if (usedItem == ARPGItem.Bow) {
+		if (usedItem == ARPGItem.Bow && isUsingBow == 0) {
+			if (inventory.isItemStocked(ARPGItem.Arrow) ) {
+				if (getOwnerArea().canEnterAreaCells(new Arrow(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 5, 2), Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector())))) {
+					getOwnerArea().registerActor(new Arrow(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), ARROW_MAX_DISTANCE, ARROW_VELOCITY));
+					inventory.removeItem(ARPGItem.Arrow, 1);
+				}
+			}
+			state = states.BOWATTACK;
 			isUsingBow = 8;
 		}
-		if (usedItem == ARPGItem.Arrow) {
-			
+		if (usedItem == ARPGItem.Sword && isUsingSword == 0) {
+			state = states.SWORDATTACK;
+			isUsingSword = 8;
 		}
-		if (usedItem == ARPGItem.Sword) {
-			
-		}
-		if (usedItem == ARPGItem.Staff) {
+		if (usedItem == ARPGItem.Staff && isUsingStaff == 0) {
+			getOwnerArea().registerActor(new MagicWaterProjectile(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), MAGIC_MAX_DISTANCE, MAGIC_VELOCITY));
+			state = states.STAFFATTACK;
 			isUsingStaff = 8;
 		}
 		if (usedItem == ARPGItem.CastleKey) {
-			
+			state = states.USINGCASTLEKEY;
 		}
 	}
 	
@@ -363,35 +401,39 @@ public class ARPGPlayer extends Player implements Holder {
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
 		@Override
 		public void interactWith(Door door){
-			
-			
-			if (door instanceof CastleDoor && usedItem == ARPGItem.CastleKey ) {
-				if (!door.isOpen()) {
-					 ((CastleDoor) door).openDoor();
-				} else {
-					setIsPassingADoor(door);
-					((CastleDoor) door).closeDoor();
-				}
-				
+			if (door instanceof CastleDoor) {
+				interactWith((CastleDoor)door);
 			} else {
 				setIsPassingADoor(door);
 			}
+
 	    }
 		
+		@Override
+		public void interactWith(CastleDoor door) {
+			if (!door.isOpen()) {
+				state = states.IDLE;
+				door.openDoor();
+			} else {
+				setIsPassingADoor(door);
+				door.closeDoor();
+			}
+		}
+		@Override
 		public void interactWith(ARPGMobs mob) {
-			if(isUsingSword > 7 && mob.isVulnerablePhysical()) {
+			if(isUsingSword > 7 && state == states.SWORDATTACK && mob.isVulnerablePhysical()) {
 				mob.damage(20);
 			}
 		}
 		
 		@Override
 		public void interactWith(Grass grass) {
-			grass.slice();
+			if (state == states.SWORDATTACK) grass.slice();
 		}
 		
 		@Override
 		public void interactWith(Bombs bomb) {
-			bomb.setExplode();
+			if (state == states.SWORDATTACK) bomb.setExplode();
 		}
 		
 		public void interactWith(Coin coin) {

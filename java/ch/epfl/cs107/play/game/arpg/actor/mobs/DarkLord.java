@@ -1,6 +1,7 @@
 package ch.epfl.cs107.play.game.arpg.actor.mobs;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import ch.epfl.cs107.play.game.actor.ShapeGraphics;
@@ -14,6 +15,7 @@ import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.arpg.actor.Bombs;
 import ch.epfl.cs107.play.game.arpg.actor.Grass;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
@@ -25,15 +27,21 @@ import ch.epfl.cs107.play.window.Canvas;
 
 public class DarkLord extends ARPGMobs{
 	private static final int ANIMATION_DURATION = 8;
+	private static final int TELEPORTATION_RADIUS = 3;
+	private final static int MAX_SPELL_WAIT_DURATION = 240;
+	private final static double ATTACK_RATE = 0.5;
+	private final static int MIN_SPELL_WAIT_DURATION = 120;
 	private final static double PROBABILITY_TO_MOVE = 0.1;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.3;
-	private final static int MAX_HP = 100;
+	private final static int MAX_HP = 200;
 	private float hp;
 	private int isDying = 0;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	private ARPGLordHandler handler = new ARPGLordHandler();
 	private int inactionCooldown = 0;
+	private int spellCooldown = 0;
+	private int teleportationCooldown = 0;
 	private int i;
 	private Orientation orientation;
 	private boolean isCellSpaceTaken = true;
@@ -55,7 +63,7 @@ public class DarkLord extends ARPGMobs{
 
     Animation[] attackingLordAnimation = RPGSprite.createAnimations(ANIMATION_DURATION/2, attackingLordSprites, true);
     
-    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f));
+    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "horizontal");
 
 	Animation vanishAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, vanishSprites);
 	
@@ -63,7 +71,6 @@ public class DarkLord extends ARPGMobs{
 		super(area, orientation, coordinates);
 		hp = MAX_HP;
 		this.orientation = orientation;
-		System.out.println(orientation);
 		state = states.IDLE;
 		inactionCooldown = 24;
 	}
@@ -77,6 +84,15 @@ public class DarkLord extends ARPGMobs{
 		if (isDying > 0) {
 			isDying--;
 		}
+		
+		if (spellCooldown > 0) {
+			spellCooldown--;
+		}
+		
+		if (teleportationCooldown > 0) {
+			teleportationCooldown--;
+		}
+		
 		if (inactionCooldown == 0) {
 			updateState();
 		}
@@ -84,8 +100,8 @@ public class DarkLord extends ARPGMobs{
 		if (hp > 0) {
 			 HPbarGreen = null;
 			 HPbarRed = null;
-			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/100f, 1.8f), new Vector((float) hp/100f, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
-			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/100, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/100, 1.7f)), Color.RED, Color.BLACK, 0.01f);
+			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/MAX_HP, 1.8f), new Vector((float) hp/MAX_HP, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
+			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/MAX_HP, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/MAX_HP, 1.7f)), Color.RED, Color.BLACK, 0.01f);
 			 HPbarGreen.setParent(this);
 			 HPbarRed.setParent(this);
 			
@@ -99,25 +115,25 @@ public class DarkLord extends ARPGMobs{
 			 HPbarRed.setParent(this);
 		 }
 		
-		 if (isDisplacementOccurs() || state == states.TELEPORT) {
+		 if (isDisplacementOccurs()) {
 		        lordAnimation[i].update(deltaTime);
 	        } else lordAnimation[i].reset();
 	     
 	     switch(getOrientation()) {
 	       	case DOWN:
-	        	i = 0;
-	        	break;
-	        	
-	        case UP:
-	        	i = 3;
-	        	break;
-	        	
-	        case RIGHT:
 	        	i = 2;
 	        	break;
 	        	
-	        case LEFT:
+	        case UP:
+	        	i = 0;
+	        	break;
+	        	
+	        case RIGHT:
 	        	i = 1;
+	        	break;
+	        	
+	        case LEFT:
+	        	i = 3;
 	        	break;
 	       }
 	     if (state == states.ATTACKING || state == states.SUMMONING || state == states.SUMMONTELEPORTATION) {
@@ -129,55 +145,105 @@ public class DarkLord extends ARPGMobs{
 	     } else vanishAnimation.reset();
 	     
 	     if (isDying == 0 && isCellSpaceTaken == false) {
-	    	 getOwnerArea().registerActor(new Coin(getOwnerArea(), getCurrentMainCellCoordinates(), 50));
+	    	 getOwnerArea().registerActor(new CastleKey(getOwnerArea(), getCurrentMainCellCoordinates()));
 	    	 getOwnerArea().unregisterActor(this);
 	     }
+	     super.update(deltaTime);
 	}
 	
 	public void updateState() {
 		switch (state) {
 			case IDLE:
-				if (!isDisplacementOccurs()) {
-					//move();
+				if (spellCooldown == 0) {
+					attack();
+				} else {
+					move();
+					inactionCooldown = RandomGenerator.getInstance().nextInt(5) + 10;
 				}
-				inactionCooldown = 20;
 				break;
 			case ATTACKING:
-				/*while (move(ANIMATION_DURATION)) {
-					move(ANIMATION_DURATION);
-				}*/
-				move(ANIMATION_DURATION);
-				state = states.TOSLEEP;
+				if(!isTeleportationOccurs()) {
+					orientateToAttack();
+					getOwnerArea().registerActor(new FireSpell(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 3));
+					state = states.IDLE;
+				}
 				break;
 			case SUMMONTELEPORTATION:
-				inactionCooldown = RandomGenerator.getInstance().nextInt(12) + 30;
-				state = states.ASLEEP;
+				teleportationCooldown = 10;
+				state = states.TELEPORT;
 				break;
 			case TELEPORT:
-				if (inactionCooldown == 0) {
-					state = states.AWAKENING;
+				if (teleportationCooldown == 0 && !isTeleportationOccurs()) {
+					teleport();
+					state = states.IDLE;
 				}
+				break;
 			case SUMMONING:
-				state = states.IDLE;
+				if(!isTeleportationOccurs()) {
+					orientateToAttack();
+					getOwnerArea().registerActor(new FlameSkull(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates().jump(getOrientation().toVector())));
+					state = states.IDLE;
+				}
 				break;
 		}
 	}
 	
+	public void attack() {
+		spellCooldown = RandomGenerator.getInstance().nextInt(MAX_SPELL_WAIT_DURATION - MIN_SPELL_WAIT_DURATION) + MIN_SPELL_WAIT_DURATION;
+		double rate = RandomGenerator.getInstance().nextDouble();
+		if (rate < ATTACK_RATE) {
+			state = states.SUMMONING;
+		} else {
+			state = states.ATTACKING;
+		}
+	}
+	
+	public void orientateToAttack() {
+		ArrayList<Orientation> list = new ArrayList<Orientation>();
+		list.add(Orientation.DOWN);
+		list.add(Orientation.UP);
+		list.add(Orientation.RIGHT);
+		list.add(Orientation.LEFT);
+		Collections.shuffle(list);
+		for (Orientation a : list) {
+			if (getOwnerArea().registerActor(new FireSpell(getOwnerArea(), a, getCurrentMainCellCoordinates().jump(a.toVector()), 0))) {
+				orientate(a);
+				return;
+			}
+		}
+	}
+	
+	public void teleport() {
+		List<DiscreteCoordinates> area = getCurrentMainCellCoordinates().getNeighboursInRadius(TELEPORTATION_RADIUS);
+		Collections.shuffle(area);
+		boolean safety = false;
+		DiscreteCoordinates target = null;
+		int maxtries = 10;
+		while (!safety && maxtries > 0) {
+			maxtries--;
+			for(DiscreteCoordinates t : area) {
+				if (getOwnerArea().enterAreaCells(this, Collections.singletonList(t)) && getOwnerArea().leaveAreaCells(this, Collections.singletonList(getCurrentMainCellCoordinates()))) {
+					safety = true;
+					target = t;
+				}
+			}
+		}
+		if (safety) super.teleport(target);
+	}
 	@Override
 	public void draw(Canvas canvas) {
 		if (isDying > 0) {
 			vanishAnimation.draw(canvas);
 		} else if (isCellSpaceTaken) {
 			switch (state) {
-				case ATTACKING:
 				case IDLE:
-					logAnimation[i].draw(canvas);
+				case TELEPORT:
+					lordAnimation[i].draw(canvas);
 					break;
-				case ASLEEP:
-					sleepingLogAnimation.draw(canvas);
-					break;
-				case AWAKENING:
-					awakeningLogAnimation.draw(canvas);
+				case SUMMONING:
+				case ATTACKING:
+				case SUMMONTELEPORTATION:
+					attackingLordAnimation[i].draw(canvas);
 					break;
 			}
 		}
@@ -204,22 +270,12 @@ public class DarkLord extends ARPGMobs{
 
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
-		switch(state) {
-		case IDLE:
-		case ASLEEP:
-		case AWAKENING:
-			return getCurrentMainCellCoordinates().getNumberInFront(orientation, 8);
-		case ATTACKING:
-			return Collections.singletonList (getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
-		default:
-			return Collections.singletonList (getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
-		}
-		
+		return getCurrentMainCellCoordinates().getNeighboursInRadius(2);
 	}
 
 	@Override
 	public boolean wantsCellInteraction() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -262,7 +318,6 @@ public class DarkLord extends ARPGMobs{
 			} else {
             	orientate(orientation);
             }
-			System.out.println(getCurrentCells());
 		}
 	}
 	
@@ -288,17 +343,21 @@ public class DarkLord extends ARPGMobs{
 	
 	@Override
 	public boolean isVulnerableFire() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isVulnerablePhysical() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isVulnerableMagic() {
-		return false;
+		return true;
+	}
+	
+	public void summon() {
+		
 	}
 	
 	@Override
@@ -313,10 +372,9 @@ public class DarkLord extends ARPGMobs{
 		
 		@Override
 		public void interactWith(ARPGPlayer player) {
-			if (state == states.ATTACKING) {
-				player.damage(20);
-			} else {
-				state = states.ATTACKING;
+			if (state != states.SUMMONTELEPORTATION && state != states.TELEPORT) {
+				inactionCooldown = 0;
+				state = states.SUMMONTELEPORTATION;
 			}
 		}
 		

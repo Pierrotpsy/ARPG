@@ -25,16 +25,20 @@ import ch.epfl.cs107.play.window.Canvas;
 
 public class LogMonster extends ARPGMobs{
 	private static final int ANIMATION_DURATION = 8;
-	private final static double PROBABILITY_TO_MOVE = 0.1;
-	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.3;
-	private final static int MAX_HP = 100;
+	private final static double PROBABILITY_TO_MOVE = 0.2;
+	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.6;
+	private final static int MAX_SLEEPING_DURATION = 240;
+	private final static int MIN_SLEEPING_DURATION = 120;
+	private final static int MAX_HP = 50;
 	private float hp;
 	private int isDying = 0;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	private ARPGLogHandler handler = new ARPGLogHandler();
 	private int inactionCooldown = 0;
+	private int cooldown = 20;
 	private int i;
+	private int moveCount;
 	private Orientation orientation;
 	private boolean isCellSpaceTaken = true;
 	private enum states {
@@ -51,15 +55,15 @@ public class LogMonster extends ARPGMobs{
 
     Animation[] logAnimation = RPGSprite.createAnimations(ANIMATION_DURATION/2, logSprites);
     
-    Sprite[][] sleepingLogSprites = RPGSprite.extractSprites("zelda/logMonster.sleeping", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f));
+    Sprite[][] sleepingLogSprites = RPGSprite.extractSprites("zelda/logMonster.sleeping", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "vertical");
 
     Animation sleepingLogAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, sleepingLogSprites, true);
     
-    Sprite[][] awakeningLogSprites = RPGSprite.extractSprites("zelda/logMonster.wakingUp", 3, 2, 2, this, 32, 32, new Vector(-0.5f, 0f));
+    Sprite[][] awakeningLogSprites = RPGSprite.extractSprites("zelda/logMonster.wakingUp", 3, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "vertical");
 
     Animation awakeningLogAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, awakeningLogSprites, true);
     
-    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f));
+    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "horizontal");
 
 	Animation vanishAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, vanishSprites);
 	
@@ -73,14 +77,15 @@ public class LogMonster extends ARPGMobs{
 	}
 	@Override
 	public void update(float deltaTime) {
+		super.update(deltaTime);
 		if (hp == 0 && isDying == 0) {
 			kill();
-		} else if (inactionCooldown > 0) {
-			inactionCooldown--;
-		}
-		if (isDying > 0) {
-			isDying--;
-		}
+		} else if (inactionCooldown > 0) inactionCooldown--;
+		
+		if (cooldown > 0) cooldown--;
+		
+		if (isDying > 0) isDying--;
+		
 		if (inactionCooldown == 0) {
 			System.out.println(state);
 			updateState();
@@ -89,8 +94,8 @@ public class LogMonster extends ARPGMobs{
 		if (hp > 0) {
 			 HPbarGreen = null;
 			 HPbarRed = null;
-			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/100f, 1.8f), new Vector((float) hp/100f, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
-			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/100, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/100, 1.7f)), Color.RED, Color.BLACK, 0.01f);
+			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/MAX_HP, 1.8f), new Vector((float) hp/MAX_HP, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
+			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/MAX_HP, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/MAX_HP, 1.7f)), Color.RED, Color.BLACK, 0.01f);
 			 HPbarGreen.setParent(this);
 			 HPbarRed.setParent(this);
 			
@@ -108,6 +113,18 @@ public class LogMonster extends ARPGMobs{
 		        logAnimation[i].update(deltaTime);
 	        } else logAnimation[i].reset();
 	     
+		 if (isDying > 0) {
+			 
+		 }
+		 
+		 if (state == states.ASLEEP) {
+			 sleepingLogAnimation.update(deltaTime);
+		 } else sleepingLogAnimation.reset();
+		
+		 if (state == states.AWAKENING) {
+			 awakeningLogAnimation.update(deltaTime);
+		 } else awakeningLogAnimation.reset();
+		 
 	     switch(getOrientation()) {
 	       	case DOWN:
 	        	i = 0;
@@ -153,19 +170,22 @@ public class LogMonster extends ARPGMobs{
 		switch (state) {
 			case IDLE:
 				if (!isDisplacementOccurs()) {
-					//move();
+					move();
 				}
-				inactionCooldown = 20;
+				inactionCooldown = RandomGenerator.getInstance().nextInt(3) + 20;
 				break;
 			case ATTACKING:
-				/*while (move(ANIMATION_DURATION)) {
+				while (move(ANIMATION_DURATION) && moveCount > 0) {
 					move(ANIMATION_DURATION);
-				}*/
-				move(ANIMATION_DURATION);
-				state = states.TOSLEEP;
+					moveCount--;
+				}
+				if ((!move(ANIMATION_DURATION) && cooldown > 0) || moveCount == 0) {
+					state = states.TOSLEEP;
+					moveCount = 0;
+				}
 				break;
 			case TOSLEEP:
-				inactionCooldown = RandomGenerator.getInstance().nextInt(12) + 30;
+				inactionCooldown = RandomGenerator.getInstance().nextInt(MAX_SLEEPING_DURATION - MIN_SLEEPING_DURATION) + MIN_SLEEPING_DURATION;
 				state = states.ASLEEP;
 				break;
 			case ASLEEP:
@@ -185,6 +205,7 @@ public class LogMonster extends ARPGMobs{
 		} else if (isCellSpaceTaken) {
 			switch (state) {
 				case ATTACKING:
+				case TOSLEEP:
 				case IDLE:
 					logAnimation[i].draw(canvas);
 					break;
@@ -220,10 +241,12 @@ public class LogMonster extends ARPGMobs{
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
 		switch(state) {
-		case IDLE:
-		case ASLEEP:
 		case AWAKENING:
-			return getCurrentMainCellCoordinates().getNumberInFront(orientation, 8);
+		case ASLEEP:
+		case TOSLEEP:
+			return Collections.singletonList(getCurrentMainCellCoordinates());
+		case IDLE:
+			return getCurrentMainCellCoordinates().getNumberInFront(orientation, 5);
 		case ATTACKING:
 			return Collections.singletonList (getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
 		default:
@@ -277,7 +300,6 @@ public class LogMonster extends ARPGMobs{
 			} else {
             	orientate(orientation);
             }
-			System.out.println(getCurrentCells());
 		}
 	}
 	
@@ -328,10 +350,12 @@ public class LogMonster extends ARPGMobs{
 		
 		@Override
 		public void interactWith(ARPGPlayer player) {
-			if (state == states.ATTACKING) {
+			if (state == states.ATTACKING && cooldown == 0) {
 				player.damage(20);
+				cooldown = 24;
 			} else {
 				state = states.ATTACKING;
+				moveCount = 6;
 			}
 		}
 		

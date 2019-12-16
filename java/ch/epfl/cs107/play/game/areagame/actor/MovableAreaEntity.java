@@ -5,6 +5,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Vector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ public abstract class MovableAreaEntity extends AreaEntity {
 
     /// Indicate if a displacement occurs right now
     private boolean displacementOccurs;
+    private boolean teleportationOccurs;
     /// Indicate how many frames the current move is supposed to take
     private int framesForCurrentMove;
     /// Indicate how many remaining frames the current move has
@@ -45,6 +47,7 @@ public abstract class MovableAreaEntity extends AreaEntity {
      */
     protected void resetMotion(){
         this.displacementOccurs = false;
+        this.teleportationOccurs = false;
         this.framesForCurrentMove = 0;
         this.remainingFramesForCurrentMove = 0;
     }
@@ -75,16 +78,12 @@ public abstract class MovableAreaEntity extends AreaEntity {
      * @return (boolean): indicate if the move is initiated
      */
     protected final boolean move(int frameForMove, int startingFrame){
-    	//System.out.println(!displacementOccurs || isTargetReached());
-    	System.out.println(!displacementOccurs);
-    	System.out.println(isTargetReached());
     	if(!displacementOccurs || isTargetReached() ) {
     		
         	List<DiscreteCoordinates> leavingCells = getLeftCells();
         	List<DiscreteCoordinates> enteringCells = getEnteringCells();
 
             if(getOwnerArea().enterAreaCells(this, enteringCells) && getOwnerArea().leaveAreaCells(this, leavingCells)){
-            	System.out.println("ok");
             	leftCells = leavingCells;
             	enteredCells = enteringCells;
             	
@@ -100,9 +99,25 @@ public abstract class MovableAreaEntity extends AreaEntity {
                 
                 return true;
             }
-            System.out.println("/ok/");
         }
-    	System.out.println("//");
+        return false;
+    }
+    
+    protected final boolean teleport(DiscreteCoordinates target){
+    	if(!displacementOccurs || isTargetReached() ) {
+        	List<DiscreteCoordinates> leavingCells = getLeftCells();
+        	List<DiscreteCoordinates> enteringCells = Collections.singletonList(target);
+            if(getOwnerArea().enterAreaCells(this, enteringCells) && getOwnerArea().leaveAreaCells(this, leavingCells)){
+            	leftCells = leavingCells;
+            	enteredCells = enteringCells;
+            	
+                teleportationOccurs = true;
+                originPosition = getPosition();
+                targetPosition = target.toVector();
+                
+                return true;
+            }
+        }
         return false;
     }
     
@@ -187,6 +202,10 @@ public abstract class MovableAreaEntity extends AreaEntity {
     protected boolean isDisplacementOccurs(){
         return displacementOccurs;
     }
+    
+    protected boolean isTeleportationOccurs(){
+        return teleportationOccurs;
+    }
 
     /**@return (boolean): true when the target cell is just reaching now*/
     protected boolean isTargetReached(){
@@ -224,6 +243,10 @@ public abstract class MovableAreaEntity extends AreaEntity {
                 setCurrentPosition(targetPosition);
                 resetMotion();
             }
+        }
+        if (teleportationOccurs) {
+        	setCurrentPosition(targetPosition);
+            resetMotion();
         }
     	remainingFramesForCurrentMove = Math.max(remainingFramesForCurrentMove - 1, 0);
     }

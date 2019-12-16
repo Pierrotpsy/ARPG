@@ -17,8 +17,6 @@ public class ARPGCollectableAreaEntity extends CollectableAreaEntity {
 	private DiscreteCoordinates position;
 	private int value;
 	
-	Sprite[][] coinSprites = RPGSprite.extractSprites("zelda/coin", 4, 1, 1, this, 16, 16);
-	Animation coinAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, coinSprites, true);
 	
 	public ARPGCollectableAreaEntity (Area area, String name, DiscreteCoordinates position, int value) {
 		super(area, Orientation.DOWN, position);

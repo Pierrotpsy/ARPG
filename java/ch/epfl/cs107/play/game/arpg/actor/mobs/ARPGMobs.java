@@ -32,6 +32,7 @@ public class ARPGMobs extends Player{
 		if (hp == 0) {
 			kill();
 		}
+		super.update(deltaTime);
 	}
 	
 	public void kill() {

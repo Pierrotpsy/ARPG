@@ -12,6 +12,7 @@ import ch.epfl.cs107.play.window.Canvas;
 public class ARPGPlayerGUI implements Graphics{
 	private float width;
 	private float height;
+	private int i;
 	private Vector anchor;
 	private ARPGPlayer player;
 	
@@ -39,9 +40,9 @@ public class ARPGPlayerGUI implements Graphics{
 		ImageGraphics(ResourcePath.getSprite("zelda/coinsDisplay"), 4f, 2f, new RegionOfInterest(0, 0, 64, 32), anchor.add(new Vector(0f, 0f)), 1, Float.MAX_VALUE);
 		coinDisplay.draw(canvas);
 		
-		getMoneyDigits()[0].draw(canvas);
-		getMoneyDigits()[1].draw(canvas);
-		getMoneyDigits()[2].draw(canvas);
+		for (i = 0; i < Integer.toString(player.getInventory().getMoney()).length(); i++) {
+			getMoneyDigits()[i].draw(canvas);
+		}
 		
 		/*
 		if (getMoneyDigits().length != 0) {

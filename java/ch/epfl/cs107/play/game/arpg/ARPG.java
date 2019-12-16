@@ -39,7 +39,7 @@ public class ARPG extends RPG {
 
 			createAreas();
 			setCurrentArea("zelda/RouteChateau", true);
-			initPlayer(new ARPGPlayer(getCurrentArea(), Orientation.DOWN, new DiscreteCoordinates(9, 7)));
+			initPlayer(new ARPGPlayer(getCurrentArea(), Orientation.DOWN, new DiscreteCoordinates(9, 9)));
 			return true;
 		}
 		return false;

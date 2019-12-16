@@ -14,17 +14,13 @@ public class Heart extends ARPGCollectableAreaEntity {
 	
 	private static final int ANIMATION_DURATION = 8;
 	private static final String NAME = "Heart";
-	private Animation animation;
-	
+
+	Sprite[][] heartSprites = RPGSprite.extractSprites("zelda/heart", 4, 1, 1, this, 16, 16, "horizontal");
+
+    Animation heartAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, heartSprites, true);
 	
 	public Heart(Area area, DiscreteCoordinates position, int value) {
 		super(area, NAME, position, value);
-		
-		Sprite[] sprites = new RPGSprite[4];
-		for (int i = 0; i < sprites.length; ++i) {
-			sprites[i] = new RPGSprite("zelda/heart", 1, 1, this, new RegionOfInterest(16 * i, 0, 16, 16));
-		}
-		animation = new Animation(ANIMATION_DURATION, sprites, false);
 	}
 	
 	@Override
@@ -34,12 +30,12 @@ public class Heart extends ARPGCollectableAreaEntity {
 
 	@Override
 	public void draw(Canvas canvas) {
-		animation.draw(canvas);
+		heartAnimation.draw(canvas);
 	}
 	
 	@Override
 	public void update(float deltaTime) {
-		animation.update(deltaTime);
+		heartAnimation.update(deltaTime);
 	}
 	
 }

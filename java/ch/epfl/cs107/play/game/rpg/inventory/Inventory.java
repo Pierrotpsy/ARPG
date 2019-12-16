@@ -60,11 +60,6 @@ public class Inventory {
 			}
 		} return(k != 0);
 	}
-	
-	public interface Holder {
-	    
-		public boolean possess(InventoryItem item);
-	}
 
 	
 }

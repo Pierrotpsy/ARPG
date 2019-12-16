@@ -16,23 +16,23 @@ import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.arpg.actor.Bombs;
 import ch.epfl.cs107.play.game.arpg.actor.Grass;
-import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Polygon;
 import ch.epfl.cs107.play.math.RandomGenerator;
 import ch.epfl.cs107.play.math.Vector;
-import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
 
 public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	private static final int ANIMATION_DURATION = 8;
-	private final static double PROBABILITY_TO_MOVE = 0.1;
-	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.3;
-	private final static int MAX_HP = 100;
+	private final static double PROBABILITY_TO_MOVE = 0.2;
+	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.4;
+	private final static int MAX_HP = 400;
 	private float hp;
-	private boolean isDying = false;
+	private boolean safety = false;
+	private int isDying = 0;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	private ARPGSkullHandler handler = new ARPGSkullHandler();
@@ -44,7 +44,7 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 
     Animation[] skullAnimation = RPGSprite.createAnimations(ANIMATION_DURATION/2, skullSprites);
     
-    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32);
+    Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "horizontal");
 
 	Animation vanishAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, vanishSprites);
 	
@@ -59,17 +59,25 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 			move();
 		}
 		
-		if (hp == 0) {
+		if (hp > 0) {
+			hp -= 0.2;
+		}
+		
+		if (hp == 0 && !safety) {
 			kill();
 		} else if (cooldown > 0) {
 			cooldown--;
 		}
 		
+		if (isDying > 0) {
+			isDying--;
+		}
+		
 		if (hp > 0) {
 			 HPbarGreen = null;
 			 HPbarRed = null;
-			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/100f, 1.8f), new Vector((float) hp/100f, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
-			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/100, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/100, 1.7f)), Color.RED, Color.BLACK, 0.01f);
+			 HPbarGreen = new ShapeGraphics(new Polygon(new Vector(0f, 1.8f), new Vector((float) hp/MAX_HP, 1.8f), new Vector((float) hp/MAX_HP, 1.7f), new Vector(0f, 1.7f)), Color.GREEN, Color.BLACK, 0.01f);
+			 HPbarRed = new ShapeGraphics(new Polygon(new Vector((float) hp/MAX_HP, 1.8f), new Vector(1f, 1.8f), new Vector(1f, 1.7f), new Vector((float) hp/MAX_HP, 1.7f)), Color.RED, Color.BLACK, 0.01f);
 			 HPbarGreen.setParent(this);
 			 HPbarRed.setParent(this);
 			
@@ -105,16 +113,22 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	        	break;
 	       }
 	        
-	     if (isDying) {
+	     if (isDying > 0) {
 	    	 vanishAnimation.update(deltaTime);
 	     } else vanishAnimation.reset();
+	     
+	     if (isDying == 0 && safety) {
+	    	 getOwnerArea().unregisterActor(this);
+	     }
+	     
+	     super.update(deltaTime);
 	}
 	
 	@Override
 	public void draw(Canvas canvas) {
-		if (isDying) {
+		if (isDying > 0) {
 			vanishAnimation.draw(canvas);
-		} else {
+		} else if (!safety) {
 			skullAnimation[i].draw(canvas);
 		}
 		
@@ -129,8 +143,8 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	}
 	
 	public void kill() {
-		isDying = true;
-		getOwnerArea().unregisterActor(this);
+		isDying = 8;
+		safety = true;
 	}
 	
 	@Override
@@ -145,11 +159,7 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 
 	@Override
 	public boolean wantsCellInteraction() {
-		if(cooldown == 0) {
-			cooldown = 10;
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	@Override
@@ -247,12 +257,17 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		
 		@Override
 		public void interactWith(ARPGPlayer player) {
-			player.damage(20);
+			if (cooldown == 0) {
+				player.damage(20);
+				cooldown = 20;
+			}
+			
 		}
 		
 		public void interactWith(ARPGMobs mob) {
-			if(mob.isVulnerableFire()) {
+			if(mob.isVulnerableFire() && cooldown == 0) {
 				mob.damage(20);
+				cooldown = 10;
 			}
 		}
 		

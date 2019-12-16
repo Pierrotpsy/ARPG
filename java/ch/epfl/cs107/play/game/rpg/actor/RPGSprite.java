@@ -154,28 +154,45 @@ public class RPGSprite extends Sprite {
 		return sprites;
 	}
 	
-	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight){  	
+	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight, String orientation){  	
 
 		Sprite[][] sprites = new Sprite[1][nbFrames];
-
-		for(int i = 0; i < nbFrames; i++){
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+		
+		if (orientation == "vertical") {
+			for(int i = 0; i < nbFrames; i++){
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight));
+			}
+		} else if (orientation == "horizontal") {
+			for(int i = 0; i < nbFrames; i++){
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight));
+			}
 		}
 		return sprites;
 	}
 	
-	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight, Vector anchor){  	
+	public static  Sprite[][] extractSprites(String name, int nbFrames, float width, float height, Positionable parent, int regionWidth, int regionHeight, Vector anchor, String orientation){  	
 
 		Sprite[][] sprites = new Sprite[1][nbFrames];
-
-		for(int i = 0; i < nbFrames; i++){
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
-			sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+		if (orientation == "vertical") {
+			for(int i = 0; i < nbFrames; i++){
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(0, i*regionHeight, regionWidth, regionHeight), anchor);
+			}
+		} else if (orientation == "horizontal") {
+			for(int i = 0; i < nbFrames; i++){
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+				sprites[0][i]  = new RPGSprite(name, width, height, parent, new RegionOfInterest(i*regionWidth, 0, regionWidth, regionHeight), anchor);
+			}
 		}
 		return sprites;
 	}

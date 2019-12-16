@@ -30,7 +30,7 @@ public class Grass extends AreaEntity {
 	
 	private RPGSprite sprite = new RPGSprite("zelda/grass", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
 	
-	Sprite[][] cutGrassSprites = RPGSprite.extractSprites("zelda/grass.sliced", 3, 1, 1, this, 32, 32);
+	Sprite[][] cutGrassSprites = RPGSprite.extractSprites("zelda/grass.sliced", 3, 1, 1, this, 32, 32, "horizontal");
 
 	Animation cutGrassAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, cutGrassSprites);
 	
@@ -50,7 +50,7 @@ public class Grass extends AreaEntity {
 
 	@Override
 	public boolean isCellInteractable() {
-		return false;
+		return true;
 	}
 
 	@Override
