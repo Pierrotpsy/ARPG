@@ -10,16 +10,15 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.RegionOfInterest;
 import ch.epfl.cs107.play.window.Canvas;
 
-public class CastleKey extends ARPGCollectableAreaEntity implements InventoryItem{
+public class Bomb extends ARPGCollectableAreaEntity implements InventoryItem {
+	private ARPGItem Bomb = ARPGItem.Bomb;
+	private static final String NAME = "Bomb";
 
-	private ARPGItem CastleKey = ARPGItem.CastleKey;
-	private static final int VALUE = 1;
-	private static final String NAME = "CastleKey";
-	private RPGSprite sprite = new RPGSprite("zelda/key", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
+	private RPGSprite sprite = new RPGSprite("zelda/bomb", 1, 1, this, new RegionOfInterest(16, 0, 16, 16));
 	
-	
-	public CastleKey(Area area, DiscreteCoordinates position) {
-		super(area, NAME, position, VALUE);
+	public Bomb(Area area, DiscreteCoordinates position) {
+		super(area, NAME, position, 1);
+		System.out.println("ok");
 	}
 	
 	@Override
@@ -31,25 +30,24 @@ public class CastleKey extends ARPGCollectableAreaEntity implements InventoryIte
 	public void draw(Canvas canvas) {
 		sprite.draw(canvas);
 	}
-	
+
 	//Getters
+	public ARPGItem getBow() {
+		return Bomb;
+	}
+	
 	@Override
 	public float getWeight() {
-		return CastleKey.getWeight();
+		return Bomb.getWeight();
 	}
 
 	@Override
 	public int getPrice() {
-		return CastleKey.getPrice();
+		return Bomb.getPrice();
 	}
 
 	@Override
 	public String getPath() {
-		return CastleKey.getPath();
+		return Bomb.getPath();
 	}
-	
-	public ARPGItem getKey() {
-		return CastleKey;
-	}
-	
 }

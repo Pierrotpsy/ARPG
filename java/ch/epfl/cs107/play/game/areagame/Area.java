@@ -86,7 +86,7 @@ public abstract class Area implements Playable {
         errorHappen = errorHappen || !actors.add(a);
 
         if(errorHappen && !safeMode) {
-            System.out.println("Actor " + a + " cannot be completely added, so remove it from where it was");
+            //System.out.println("Actor " + a + " cannot be completely added, so remove it from where it was");
             // Call it in safe mode to avoid recursive calls
             removeActor(a, true);
         }
@@ -109,7 +109,7 @@ public abstract class Area implements Playable {
         errorHappen = errorHappen || !actors.remove(a);
 
         if(errorHappen && !safeMode) {
-            System.out.println("Actor " + a + " cannot be completely removed, so add it from where it was");
+            //System.out.println("Actor " + a + " cannot be completely removed, so add it from where it was");
             // Call it in safe mode to avoid recursive calls
             addActor(a, true);
         }

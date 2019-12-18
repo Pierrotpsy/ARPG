@@ -4,23 +4,23 @@ import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
+import ch.epfl.cs107.play.game.arpg.actor.ARPGItem;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
+import ch.epfl.cs107.play.game.rpg.inventory.InventoryItem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.RegionOfInterest;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
-public class Coin extends ARPGCollectableAreaEntity {
-	
-	private static final int ANIMATION_DURATION = 8;
-	private static final String NAME = "Coin";
-	Sprite[][] coinSprites = RPGSprite.extractSprites("zelda/coin", 4, 1, 1, this, 16, 16, "horizontal");
+public class Bow extends ARPGCollectableAreaEntity implements InventoryItem {
+	private ARPGItem Bow = ARPGItem.Bow;
+	private static final String NAME = "Bow";
 
-    Animation coinAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, coinSprites, true);
+	private RPGSprite sprite = new RPGSprite("zelda/bow.icon", 1, 1, this, new RegionOfInterest(0, 0, 16, 16));
 	
-	public Coin(Area area, DiscreteCoordinates position, int value) {
-		super(area, NAME, position, value);
+	public Bow(Area area, DiscreteCoordinates position) {
+		super(area, NAME, position, 1);
 	}
 	
 	@Override
@@ -30,12 +30,26 @@ public class Coin extends ARPGCollectableAreaEntity {
 
 	@Override
 	public void draw(Canvas canvas) {
-		coinAnimation.draw(canvas);
+		sprite.draw(canvas);
+	}
+
+	//Getters
+	public ARPGItem getBow() {
+		return Bow;
 	}
 	
 	@Override
-	public void update(float deltaTime) {
-		coinAnimation.update(deltaTime);
+	public float getWeight() {
+		return Bow.getWeight();
 	}
-	
+
+	@Override
+	public int getPrice() {
+		return Bow.getPrice();
+	}
+
+	@Override
+	public String getPath() {
+		return Bow.getPath();
+	}
 }

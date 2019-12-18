@@ -43,22 +43,9 @@ public class ARPGPlayerGUI implements Graphics{
 		for (i = 0; i < Integer.toString(player.getInventory().getMoney()).length(); i++) {
 			getMoneyDigits()[i].draw(canvas);
 		}
-		
-		/*
-		if (getMoneyDigits().length != 0) {
-			for (int i = 0; i < getMoneyDigits().length; i++) {
-				try {
-					getMoneyDigits()[i].draw(canvas);
-
-				}
-				catch(NullPointerException e) {
-					System.out.println("Nullpointer");
-				}
-			}
-		}*/
-		
 	}
 	
+	//Method to get an ImageGraphics array of the digits of the money in the inventory
 	public ImageGraphics[] getMoneyDigits() {
 		String money = Integer.toString(player.getInventory().getMoney());
 		ImageGraphics[] digits = new ImageGraphics[money.length()];

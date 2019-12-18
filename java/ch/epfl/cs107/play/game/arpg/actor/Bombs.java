@@ -13,11 +13,19 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Bomb;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Bow;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Staff;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.CaveDoor;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Rock;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.Bomber;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
+import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.RegionOfInterest;
+import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
 public class Bombs extends AreaEntity implements Interactor {
@@ -87,7 +95,7 @@ public class Bombs extends AreaEntity implements Interactor {
 		}
 		
 		if (timer == 0 && isCellSpaceTaken) {
-			isExploding = 8;
+			isExploding = 16;
 			safety = true;
 			isCellSpaceTaken = false;
 		}
@@ -128,8 +136,10 @@ public class Bombs extends AreaEntity implements Interactor {
 		timer = 0;
 	}
 	
+	//Handler for the bombs
 	private class ARPGBombHandler implements ARPGInteractionVisitor {
 		
+		//Slices grass
 		@Override
 		public void interactWith(Grass grass) {
 			if (isExploding > 0 && safety) {
@@ -137,6 +147,7 @@ public class Bombs extends AreaEntity implements Interactor {
 			}
 		}
 		
+		//Damages the player
 		@Override
 		public void interactWith(ARPGPlayer player) {
 			if (isExploding > 0 && safety) {
@@ -144,13 +155,15 @@ public class Bombs extends AreaEntity implements Interactor {
 			}
 		}
 
+		//Destroys all collectable entities except bombs, the staff, and the bow
 		@Override
 		public void interactWith(CollectableAreaEntity object) {
-			if (isExploding > 0 && safety) {
+			if (isExploding > 0 && safety && !(object instanceof Bomb) && !(object instanceof Staff) && !(object instanceof Bow)) {
 				((ARPGCollectableAreaEntity) object).collect();		
 			}
 		}
-
+		
+		//Makes other bombs explode
 		@Override
 		public void interactWith(Bombs bomb) {
 			if (isExploding > 0 && safety) {
@@ -158,10 +171,34 @@ public class Bombs extends AreaEntity implements Interactor {
 			}	
 		}
 		
+		//Damages all mobs vulnerable to physical damage except the bomber
 		@Override
 		public void interactWith(ARPGMobs mob) {
-			if (isExploding > 0 && mob.isVulnerablePhysical() && safety) {
+			if (isExploding > 0 && mob.isVulnerablePhysical() && safety && !(mob instanceof Bomber)) {
 				mob.damage(100);
+			}
+		}
+		
+		//Destroys a rock
+		@Override
+		public void interactWith(Rock rock) {
+			if (isExploding > 0 && safety) {
+				rock.destroy();	
+			}
+		}
+		
+		@Override
+		public void interactWith(Door door) {
+			if (door instanceof CaveDoor) {
+				interactWith((CaveDoor) door);
+			}
+		}
+		
+		//Destroys the door to the cave
+		@Override
+		public void interactWith(CaveDoor door) {
+			if (isExploding > 0) {
+				door.openDoor();	
 			}
 		}
 	}

@@ -1,0 +1,7 @@
+<strings id="arpg">
+    <string name="game_name">ARPG</string>
+    <string name="rock_interaction">A bomb might be able to take care of it</string>
+    <string name="arrow_depleted">No more arrows</string>
+    <string name="bomb_depleted">No more bombs</string>
+</strings>
+

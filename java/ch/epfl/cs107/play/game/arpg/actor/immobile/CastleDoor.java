@@ -1,4 +1,4 @@
-package ch.epfl.cs107.play.game.arpg.actor;
+package ch.epfl.cs107.play.game.arpg.actor.immobile;
 
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
@@ -31,6 +31,7 @@ public class CastleDoor extends Door {
         return true;
     }
 	
+	//Closes the door
 	public void closeDoor() {
 		signal = Logic.FALSE;
 		isCellSpaceTaken = true;
@@ -57,6 +58,7 @@ public class CastleDoor extends Door {
 		}
 	}
 	
+	//Opens the door
 	public void openDoor() {
 		signal = Logic.TRUE;
 		isCellSpaceTaken = false;

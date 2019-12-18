@@ -1,6 +1,7 @@
 package ch.epfl.cs107.play.game.arpg.actor.mobs;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +17,8 @@ import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.arpg.actor.Bombs;
 import ch.epfl.cs107.play.game.arpg.actor.Grass;
-import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Bomb;
+import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs.ARPGMobHandler;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -25,51 +27,58 @@ import ch.epfl.cs107.play.math.RandomGenerator;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
-public class FlameSkull extends ARPGMobs implements FlyableEntity{
-	//Constants
-	private static final int ANIMATION_DURATION = 8;
-	private final static double PROBABILITY_TO_MOVE = 0.2;
+public class Bomber extends ARPGMobs {
+	//Constants for probability to move
+	private final static double PROBABILITY_TO_MOVE = 0.5;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.4;
-	private final static int MAX_HP = 40;
+	
+	//Constant for animation duration
+	private static final int ANIMATION_DURATION = 8;
+	
+	//Constants for cooldowns
+	private final static int BOMB_COOLDOWN = 10;
 	private final static int ACTION_COOLDOWN = 20;
+	//Max hp
+	private final static int MAX_HP = 40;
 	
 	private float hp;
 	private boolean safety = false;
+	
+	//Cooldown for animation
 	private int isDying = 0;
+	
+	private boolean isCellSpaceTaken;
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
-	private ARPGSkullHandler handler = new ARPGSkullHandler();
 	private int cooldown = ACTION_COOLDOWN;
 	private int i;
 	private Orientation orientation;
+	//Cooldown before the placement of a new bomb
+	private int bombCooldown = BOMB_COOLDOWN;
 	
 	//Animation
-	Sprite[][] skullSprites = RPGSprite.extractSprites("zelda/flameSkull", 3, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), new Orientation[] {Orientation.UP, Orientation.LEFT, Orientation.DOWN, Orientation.RIGHT});
+	Sprite[][] sprites = RPGSprite.extractSprites("zelda/character", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.UP, Orientation.LEFT, Orientation.DOWN, Orientation.RIGHT});
 
-    Animation[] skullAnimation = RPGSprite.createAnimations(ANIMATION_DURATION/2, skullSprites);
+    Animation[] animation = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
     
     Sprite[][] vanishSprites = RPGSprite.extractSprites("zelda/vanish", 6, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), "horizontal");
 
 	Animation vanishAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, vanishSprites);
 	
-	//Constructor for FlameSkull
-	public FlameSkull(Area area, Orientation orientation, DiscreteCoordinates coordinates) {
+	//Constructor for a bomber
+	public Bomber(Area area, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(area, orientation, coordinates);
 		hp = MAX_HP;
 		this.orientation = orientation;
 	}
-	
 	@Override
 	public void update(float deltaTime) {
 		updateHPBar();
 		updateAnimations(deltaTime);
 		
-		if (!isDisplacementOccurs()) {
+		if (!isDisplacementOccurs() && hp > 0 && cooldown == 0) {
 			move();
-		}
-		
-		if (hp > 0) {
-			hp -= 0.2;
+			cooldown = ACTION_COOLDOWN;
 		}
 		
 		if (hp == 0 && !safety) {
@@ -77,15 +86,18 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		} else if (cooldown > 0) {
 			cooldown--;
 		}
+		if (bombCooldown > 0) bombCooldown--;
 		
 		if (isDying > 0) {
 			isDying--;
 		}
-	     
-	     if (isDying == 0 && safety) {
-	    	 getOwnerArea().unregisterActor(this);
+		
+
+	     if (bombCooldown == 0) {
+	    	 orientateToAttack();
+	    	 getOwnerArea().registerActor(new Bombs(getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 50));
+	    	 bombCooldown = BOMB_COOLDOWN;
 	     }
-	     
 	     super.update(deltaTime);
 	}
 	
@@ -110,31 +122,36 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	}
 	
 	private void updateAnimations(float deltaTime) {
-		 if (isDisplacementOccurs()) {
-		        skullAnimation[i].update(deltaTime);
-	        } else skullAnimation[i].reset();
-	       
-	     switch(getOrientation()) {
-	       	case DOWN:
-	        	i = 2;
-	        	break;
-	        	
-	        case UP:
-	        	i = 0;
-	        	break;
-	        	
-	        case RIGHT:
-	        	i = 1;
-	        	break;
-	        	
-	        case LEFT:
-	        	i = 3;
-	        	break;
-	       }
-	        
-	     if (isDying > 0) {
-	    	 vanishAnimation.update(deltaTime);
-	     } else vanishAnimation.reset();
+		if (isDisplacementOccurs()) {
+	        animation[i].update(deltaTime);
+        } else animation[i].reset();
+       
+     switch(getOrientation()) {
+       	case DOWN:
+        	i = 2;
+        	break;
+        	
+        case UP:
+        	i = 0;
+        	break;
+        	
+        case RIGHT:
+        	i = 3;
+        	break;
+        	
+        case LEFT:
+        	i = 1;
+        	break;
+       }
+        
+     if (isDying > 0) {
+    	 vanishAnimation.update(deltaTime);
+     } else vanishAnimation.reset();
+     
+     if (isDying == 0 && safety) {
+    	 getOwnerArea().registerActor(new Bomb(getOwnerArea(), getCurrentMainCellCoordinates()));
+    	 getOwnerArea().unregisterActor(this);
+     }
 	}
 	
 	@Override
@@ -142,7 +159,7 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		if (isDying > 0) {
 			vanishAnimation.draw(canvas);
 		} else if (!safety) {
-			skullAnimation[i].draw(canvas);
+			animation[i].draw(canvas);
 		}
 		
 		if (HPbarGreen != null) {
@@ -155,9 +172,26 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		}
 	}
 	
-	//Kills the skull
+	//Checks all orientations and chooses a random one to attack
+	public void orientateToAttack() {
+		ArrayList<Orientation> list = new ArrayList<Orientation>();
+		list.add(Orientation.DOWN);
+		list.add(Orientation.UP);
+		list.add(Orientation.RIGHT);
+		list.add(Orientation.LEFT);
+		Collections.shuffle(list);
+		for (Orientation a : list) {
+			if (getOwnerArea().registerActor(new FireSpell(getOwnerArea(), a, getCurrentMainCellCoordinates().jump(a.toVector()), 0))) {
+				orientate(a);
+				return;
+			}
+		}
+	}
+	
+	//Kills the bomber
 	public void kill() {
 		isDying = 16;
+		isCellSpaceTaken = false;
 		safety = true;
 	}
 	
@@ -173,20 +207,19 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 
 	@Override
 	public boolean wantsCellInteraction() {
-		return true;
-	}
-
-	@Override
-	public boolean wantsViewInteraction() {
 		return false;
 	}
 
 	@Override
+	public boolean wantsViewInteraction() {
+		return true;
+	}
+
+	@Override
 	public void interactWith(Interactable other) {
-		other.acceptInteraction(handler);	
 	}
 	
-	//Random movements
+	//Random movement 
 	@Override
 	public void move() {
 		double chanceToMove = RandomGenerator.getInstance().nextDouble();
@@ -222,12 +255,12 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	
 	@Override
 	public boolean takeCellSpace() {
-		return false;
+		return isCellSpaceTaken;
 	} 
 
 	@Override
 	public boolean isCellInteractable() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -240,9 +273,10 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		((ARPGInteractionVisitor)v).interactWith(this);
 	}
 	
+	//Vulnerabilities
 	@Override
 	public boolean isVulnerableFire() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -255,48 +289,10 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 		return true;
 	}
 	
+	//Damage by a given amount
 	@Override
 	public void damage(int dmg) {
 		hp -= dmg;
 	}
-
-	//FlameSkull can fly
-	@Override
-	public void canFly() {
-	}
 	
-	//Handler for flameskull
-	private class ARPGSkullHandler extends ARPGMobHandler {
-		//Slices grass
-		@Override
-		public void interactWith(Grass grass) {
-			grass.slice();
-		}
-		
-		//Damages player
-		@Override
-		public void interactWith(ARPGPlayer player) {
-			if (cooldown == 0) {
-				player.damage(20);
-				cooldown = 20;
-			}
-			
-		}
-		//Damages mobs vulnerable to fire
-		@Override
-		public void interactWith(ARPGMobs mob) {
-			if(mob.isVulnerableFire() && cooldown == 0) {
-				mob.damage(20);
-				cooldown = 10;
-			}
-		}
-
-		//Makes bombs explode
-		@Override
-		public void interactWith(Bombs bomb) {
-			bomb.setExplode();
-			
-		}
-	}
-
 }

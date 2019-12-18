@@ -75,6 +75,7 @@ public class Projectile extends MovableAreaEntity implements Interactor {
 		other.acceptInteraction(handler);
 		
 	}
+	//Handler for projectiles
 	public class ARPGProjectileHandler implements ARPGInteractionVisitor {
 	}
 }

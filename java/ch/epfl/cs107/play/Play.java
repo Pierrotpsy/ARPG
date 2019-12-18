@@ -7,6 +7,7 @@ import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.io.ResourceFileSystem;
 import ch.epfl.cs107.play.io.XMLTexts;
 import ch.epfl.cs107.play.recorder.RecordReplayer;
+import ch.epfl.cs107.play.window.Keyboard;
 import ch.epfl.cs107.play.window.Window;
 import ch.epfl.cs107.play.window.swing.SwingWindow;
 
@@ -17,18 +18,18 @@ public class Play {
 
 	/** One second in nano second */
     private static final float ONE_SEC = 1E9f;
-
+    
+    
 	/**
 	 * Main entry point.
 	 * @param args (Array of String): ignored
 	 */
 	public static void main(String[] args) {
-
 		// Define cascading file system
 		final FileSystem fileSystem = new ResourceFileSystem(DefaultFileSystem.INSTANCE);
 
         // Create a demo game and initialize corresponding texts
-		XMLTexts.initialize(fileSystem, "strings/icmon_fr.xml");
+		XMLTexts.initialize(fileSystem, "strings/arpg.xml");
        
         final Game game = new ARPG();
 
@@ -50,7 +51,10 @@ public class Play {
 
 				// Run until the user try to close the window
 				while (!window.isCloseRequested()) {
-
+					//Check for pause
+					
+					
+					
 					// Compute time interval
                     lastTime = currentTime;
                     currentTime = System.nanoTime();

@@ -96,6 +96,17 @@ public final class DiscreteCoordinates implements Serializable {
     	return result;
     }
     
+    
+    public List<DiscreteCoordinates> getArea(int width, int height) {
+    	List<DiscreteCoordinates> result = new ArrayList<DiscreteCoordinates>();		
+    	int a,b;
+    	for (a = 0; a < width; a++) {
+    		for (b = 0; b < height; b++) {
+    			result.add(new DiscreteCoordinates(x + a, y + b));
+    		}
+    	}
+    	return result;
+	}
     /**
      * Make a jump to another cell
      * @param dx (int): the delta x
@@ -172,4 +183,6 @@ public final class DiscreteCoordinates implements Serializable {
     public String toString() {
         return "Coor(x:"+ x +", y:"+ y +")";
     }
+
+	
 }

@@ -24,12 +24,14 @@ import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
 public class LogMonster extends ARPGMobs{
+	//Constants
 	private static final int ANIMATION_DURATION = 8;
 	private final static double PROBABILITY_TO_MOVE = 0.2;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.6;
 	private final static int MAX_SLEEPING_DURATION = 240;
 	private final static int MIN_SLEEPING_DURATION = 120;
 	private final static int MAX_HP = 50;
+	
 	private float hp;
 	private int isDying = 0;
 	private ShapeGraphics HPbarGreen;
@@ -41,6 +43,7 @@ public class LogMonster extends ARPGMobs{
 	private int moveCount;
 	private Orientation orientation;
 	private boolean isCellSpaceTaken = true;
+	//States for LogMonster
 	private enum states {
 		IDLE,
 		ATTACKING,
@@ -51,6 +54,7 @@ public class LogMonster extends ARPGMobs{
 	}
 	private states state;
 	
+	//Animations
 	Sprite[][] logSprites = RPGSprite.extractSprites("zelda/logMonster", 4, 2, 2, this, 32, 32, new Vector(-0.5f, 0f), new Orientation[] {Orientation.UP, Orientation.LEFT, Orientation.DOWN, Orientation.RIGHT});
 
     Animation[] logAnimation = RPGSprite.createAnimations(ANIMATION_DURATION/2, logSprites);
@@ -67,14 +71,15 @@ public class LogMonster extends ARPGMobs{
 
 	Animation vanishAnimation = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, vanishSprites);
 	
+	//Constructor for logmonster
 	public LogMonster(Area area, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(area, orientation, coordinates);
 		hp = MAX_HP;
 		this.orientation = orientation;
-		System.out.println(orientation);
 		state = states.IDLE;
 		inactionCooldown = 24;
 	}
+	
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
@@ -87,7 +92,6 @@ public class LogMonster extends ARPGMobs{
 		if (isDying > 0) isDying--;
 		
 		if (inactionCooldown == 0) {
-			System.out.println(state);
 			updateState();
 		}
 		
@@ -228,6 +232,7 @@ public class LogMonster extends ARPGMobs{
 		}
 	}
 	
+	//Kills the logmonster
 	public void kill() {
 		isDying = 16;
 		isCellSpaceTaken = false;
@@ -238,6 +243,7 @@ public class LogMonster extends ARPGMobs{
 		return Collections.singletonList(getCurrentMainCellCoordinates());
 	}
 
+	//Returns different cells according to the state
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
 		switch(state) {
@@ -270,6 +276,7 @@ public class LogMonster extends ARPGMobs{
 		other.acceptInteraction(handler);	
 	}
 	
+	//Random movement
 	@Override
 	public void move() {
 		double chanceToMove = RandomGenerator.getInstance().nextDouble();
@@ -323,6 +330,7 @@ public class LogMonster extends ARPGMobs{
 		((ARPGInteractionVisitor)v).interactWith(this);
 	}
 	
+	//Vulnerabilites
 	@Override
 	public boolean isVulnerableFire() {
 		return true;
@@ -338,16 +346,16 @@ public class LogMonster extends ARPGMobs{
 		return false;
 	}
 	
+	//Damages the mob by a given amount
 	@Override
 	public void damage(int dmg) {
 		hp -= dmg;
 	}
 	
+	//Handler for log monster
 	private class ARPGLogHandler extends ARPGMobHandler {
-		@Override
-		public void interactWith(Grass grass) {
-		}
 		
+		//Damages player
 		@Override
 		public void interactWith(ARPGPlayer player) {
 			if (state == states.ATTACKING && cooldown == 0) {
@@ -357,17 +365,6 @@ public class LogMonster extends ARPGMobs{
 				state = states.ATTACKING;
 				moveCount = 6;
 			}
-		}
-		
-		public void interactWith(ARPGMobs mob) {
-		}
-		
-		@Override
-		public void interactWith(CollectableAreaEntity object) {
-		}
-
-		@Override
-		public void interactWith(Bombs bomb) {			
 		}
 	}
 

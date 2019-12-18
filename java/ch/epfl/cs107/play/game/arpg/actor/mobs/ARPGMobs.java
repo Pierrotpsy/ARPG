@@ -29,15 +29,12 @@ public class ARPGMobs extends Player{
 	
 	@Override
 	public void update(float deltaTime) {
-		if (hp == 0) {
-			kill();
-		}
+
 		super.update(deltaTime);
 	}
 	
+	//Kills a mob
 	public void kill() {
-		isCellSpaceTaken = false;
-		getOwnerArea().unregisterActor(this);
 	}
 	
 	@Override
@@ -47,26 +44,21 @@ public class ARPGMobs extends Player{
 
 	@Override
 	public List<DiscreteCoordinates> getFieldOfViewCells() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean wantsCellInteraction() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean wantsViewInteraction() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void interactWith(Interactable other) {
-		// TODO Auto-generated method stub
-		
+	public void interactWith(Interactable other) {		
 	}
 
 	@Override
@@ -76,48 +68,43 @@ public class ARPGMobs extends Player{
 
 	@Override
 	public boolean isCellInteractable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isViewInteractable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void acceptInteraction(AreaInteractionVisitor v) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	//Methods for vulnerability to a certain type of damage
 	public boolean isVulnerableFire() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
 	public boolean isVulnerablePhysical() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isVulnerableMagic() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
+	//Damages a mob by a given amount
 	public void damage(int dmg) {		
 	}
 	
+	//Moves a mob
 	public void move() {	
-		double rate = RandomGenerator.getInstance().nextDouble();
 	}
 	
 	/**
@@ -128,6 +115,7 @@ public class ARPGMobs extends Player{
     public void moveOrientate(Orientation orientation, Button b){
     }
     
+    //Handler for mobs
 	public class ARPGMobHandler implements ARPGInteractionVisitor {
 		
 	}

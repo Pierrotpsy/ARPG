@@ -12,7 +12,6 @@ import ch.epfl.cs107.play.window.Canvas;
 
 public class ARPGCollectableAreaEntity extends CollectableAreaEntity {
 	
-	private static final int ANIMATION_DURATION = 8;
 	private String name;
 	private DiscreteCoordinates position;
 	private int value;
@@ -25,14 +24,17 @@ public class ARPGCollectableAreaEntity extends CollectableAreaEntity {
 		this.value = value;
 	}
 	
+	//Destroys the item
 	public void collect() {
 		getOwnerArea().unregisterActor(this);
 	}
 	
+	//Getter for the name of a collectable area entity
 	public String getName() {
 		return name;
 	}
 	
+	//Getter for the value of a collectable area entity
 	public int getValue() {
 		return value;
 	}

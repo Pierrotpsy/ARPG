@@ -8,19 +8,28 @@ import java.util.List;
 import java.util.Map;
 
 import ch.epfl.cs107.play.game.actor.ShapeGraphics;
+import ch.epfl.cs107.play.game.actor.TextGraphics;
 import ch.epfl.cs107.play.game.areagame.Area;
 import ch.epfl.cs107.play.game.areagame.actor.Animation;
 import ch.epfl.cs107.play.game.areagame.actor.Interactable;
+import ch.epfl.cs107.play.game.rpg.actor.Dialog;
 import ch.epfl.cs107.play.game.rpg.actor.Door;
 import ch.epfl.cs107.play.game.rpg.actor.Player;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
+import ch.epfl.cs107.play.io.XMLTexts;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.ARPGPlayerGUI;
+import ch.epfl.cs107.play.game.arpg.Test;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Bomb;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Bow;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Heart;
+import ch.epfl.cs107.play.game.arpg.actor.collectables.Staff;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.CastleDoor;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.CaveDoor;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
 import ch.epfl.cs107.play.game.arpg.actor.projectiles.Arrow;
 import ch.epfl.cs107.play.game.arpg.actor.projectiles.MagicWaterProjectile;
@@ -31,6 +40,7 @@ import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
 import ch.epfl.cs107.play.window.Keyboard;
+import ch.epfl.cs107.play.window.Window;
 
 public class ARPGPlayer extends Player {
 	
@@ -39,21 +49,33 @@ public class ARPGPlayer extends Player {
 	private ShapeGraphics HPbarGreen;
 	private ShapeGraphics HPbarRed;
 	
-	/// Animation duration in frame number
-    private final static int ANIMATION_DURATION = 8;
     private final static int ARROW_MAX_DISTANCE = 6;
     private final static int ARROW_VELOCITY = 2;
     private final static int MAGIC_MAX_DISTANCE = 6;
     private final static int MAGIC_VELOCITY = 2;
+    private final static int REGEN_COOLDOWN = 50;
+    
+	// Animation duration in frame number
+    private final static int ANIMATION_DURATION = 8;
+    
+    //PlayerHandler
     private final ARPGPlayerHandler handler = new ARPGPlayerHandler();
     
     private ARPGInventory inventory;
     private ARPGPlayerGUI GUI;
     private ARPGItem usedItem;
     private List<ARPGItem> keySet;
+    private int regenCooldown = 0;
+    
+    //Animation countdowns
     private int isUsingSword = 0;
     private int isUsingStaff = 0;
     private int isUsingBow = 0;
+    
+	private Dialog d;
+	private boolean b = false;
+	//States of the player
+	private states state;
     private enum states {
 		IDLE,
 		SWORDATTACK,
@@ -62,8 +84,8 @@ public class ARPGPlayer extends Player {
 		USINGCASTLEKEY;
 		
 	}
-	private states state;
-//    Animations:
+    
+    //Animations:
     Sprite[][] sprites = RPGSprite.extractSprites("zelda/player", 4, 1, 2, this, 16, 32, new Orientation[] {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT});
 
     Animation[] animations = RPGSprite.createAnimations(ANIMATION_DURATION/2, sprites);
@@ -80,41 +102,45 @@ public class ARPGPlayer extends Player {
     
     Animation[] bowAnimations = RPGSprite.createAnimations(ANIMATION_DURATION/2, bowSprites);
 	
-    /**
-	 * Demo actor
-	 * 
-	 */
+	
+    //ARPGPlayer Constructor
 	public ARPGPlayer(Area owner, Orientation orientation, DiscreteCoordinates coordinates) {
 		super(owner, orientation, coordinates);
 		this.hp = 100;		
-		inventory = new ARPGInventory(100, 0);
-		inventory.addItem(ARPGItem.CastleKey, 1);
+		inventory = new ARPGInventory(100, 0, this);
 		inventory.addItem(ARPGItem.Sword, 1);
-		inventory.addItem(ARPGItem.Bow, 1);
-		inventory.addItem(ARPGItem.Arrow, 10);
-		inventory.addItem(ARPGItem.Staff, 1);
-		inventory.addItem(ARPGItem.Bomb, 10);
+		
+		if (Test.MODE) {
+			inventory.addItem(ARPGItem.Sword, 1);
+			inventory.addItem(ARPGItem.Bow, 1);
+			inventory.addItem(ARPGItem.Arrow, 10);
+			inventory.addItem(ARPGItem.Bomb, 10);
+			inventory.addItem(ARPGItem.Staff, 1);
+			inventory.addItem(ARPGItem.CastleKey, 1);
+		}
 		
 		GUI = new ARPGPlayerGUI(this);
 		
-		keySet = new ArrayList<ARPGItem>(getInventory().getItems().keySet());
+		keySet = new ArrayList<ARPGItem>(inventory.getItems().keySet());
 		
-		for(Map.Entry<ARPGItem, Integer> entry: getInventory().getItems().entrySet()) {
+		for(Map.Entry<ARPGItem, Integer> entry: inventory.getItems().entrySet()) {
 			if (entry.getValue() > 0) {
 				usedItem = entry.getKey();
 				return;
 			}
 		}
+		
 		state = states.IDLE;
+		
 		resetMotion();
 	}
 	 
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
-		//updateState();
 		updateHP();
 		updateAnimations(deltaTime);
+		inventory.updateDrawnItems();
 		
 		Keyboard keyboard= getOwnerArea().getKeyboard();
 		if (state == states.IDLE) {
@@ -133,24 +159,22 @@ public class ARPGPlayer extends Player {
 		if (space.isPressed()) {
 			useItem();
 		}
-			
-	}
+		
+		Button q = keyboard.get(Keyboard.Q);
+		if (q.isPressed()) {
+			swap();
+		}
+		
+		d = new Dialog(XMLTexts.getText("rock_interaction"), "dialog", getOwnerArea());
+		
+		if (state == states.IDLE && regenCooldown > 0) {
+			regenCooldown--;
+		} else if (state != states.IDLE) regenCooldown = REGEN_COOLDOWN;
+		if (regenCooldown == 0) strengthen(2);
 	
-    private void updateState() {
-    	switch (state) {
-	    	case IDLE:
-	    		break;
-	    	case SWORDATTACK:
-	    		break;
-	    	case STAFFATTACK:
-	    		break;
-	    	case BOWATTACK:
-	    		break;
-	    	case USINGCASTLEKEY:
-	    		break;
-    	}
-    }
+	}
     
+	//Updates the HP bar
     private void updateHP() {
     	if (hp > 0) {
 			 HPbarGreen = null;
@@ -170,9 +194,8 @@ public class ARPGPlayer extends Player {
 		 }
     }
     
-    private void updateAnimations(float deltaTime) {
-
-		
+    //Updates the animation according to which animation needs to be displayed
+    private void updateAnimations(float deltaTime) {	
         switch(getOrientation()) {
         	case LEFT :
         		i = 3;
@@ -235,10 +258,12 @@ public class ARPGPlayer extends Player {
         }
         
     }
+    
 	@Override
 	public void draw(Canvas canvas) {
 		GUI.draw(canvas);
-		
+		//if (d != null) d.draw(canvas);
+
 		if(isUsingSword > 0) {
 			swordAnimations[j].draw(canvas);
 		} else 	if (isUsingBow > 0) {
@@ -253,11 +278,13 @@ public class ARPGPlayer extends Player {
 		}
 		if (HPbarRed != null) {
 			HPbarRed.draw(canvas);
-
+		}
+		if (b) {
+			inventory.draw(canvas);
 		}
 	}
 
-
+	//If the movement is in the player's orientation, moves, if not, orientates the player to the given orientation
 	private void moveOrientate(Orientation orientation, Button b){
 	    
 		if(b.isDown()) {
@@ -265,11 +292,8 @@ public class ARPGPlayer extends Player {
 	        	else orientate(orientation);
 	        }
 	}
-	
-	public boolean isWeak() {
-		return (hp <= 0.f);
-	}
 
+	//Adds a given amount of hp to the player, max hp is 100
 	public boolean strengthen(int points) {
 		if (hp == 100) {
 			return false;
@@ -297,6 +321,7 @@ public class ARPGPlayer extends Player {
 	public boolean isViewInteractable() {
 		return true;
 	}
+	
 	@Override
 	public List<DiscreteCoordinates> getCurrentCells() {
 		return Collections.singletonList(getCurrentMainCellCoordinates());
@@ -317,17 +342,12 @@ public class ARPGPlayer extends Player {
 		return true;
 	}
 	
-	public ARPGPlayer getPlayer() {
-		return this;
-	}
-	
+	//Returns true if "E" is pressed, if the player performs a sword attack, or if he is using a castle key
 	@Override
 	public boolean wantsViewInteraction() {
 		Keyboard keyboard= getOwnerArea().getKeyboard();
 		Button e = keyboard.get(Keyboard.E);
-		if (e.isPressed() || state == states.SWORDATTACK) {
-			return true;
-		} else if (state == states.USINGCASTLEKEY) {
+		if (e.isPressed() || state == states.SWORDATTACK || state == states.USINGCASTLEKEY) {
 			return true;
 		}
 		return false;
@@ -338,16 +358,24 @@ public class ARPGPlayer extends Player {
 		other.acceptInteraction(handler);
 	}
     
+	//Damages the player by a given amount
     public void damage(int d) {
     	hp -= d;
     }
     
     
-//    Inventory:
+    //Returns true if the player possessed a given item
 	public boolean possess(ARPGItem item) {
     	return inventory.isItemStocked(item);
 	}
+    
+    private void swap() {
+    	if (b) {
+    		b = false;
+    	} else if (!b) b = true;
+    }
 	
+	//If invoked, moves the used Item to the next one on the list
     protected void switchItem() {
 		int a = keySet.indexOf(usedItem);
 		if (a + 1 == keySet.size()) a = -1;
@@ -358,6 +386,7 @@ public class ARPGPlayer extends Player {
 		usedItem = keySet.get(a+1);
 	}
     
+    //For each usable item, makes it possible to use them
 	protected void useItem() {
 		if (usedItem == ARPGItem.Bomb && inventory.isItemStocked(usedItem)) {
 			if (getOwnerArea().canEnterAreaCells(new Bombs(getOwnerArea(), getCurrentMainCellCoordinates().jump(getOrientation().toVector()), 100), Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector())))) {
@@ -389,36 +418,52 @@ public class ARPGPlayer extends Player {
 		}
 	}
 	
+	//Returns the path of the used Item
 	public String getUsedItemPath() {
 		return usedItem.getPath();
 	}
 	
+	//Returns the player's inventory
 	public ARPGInventory getInventory() {
 		return inventory;
 	}
-
 	
+	//Is used to enable the player to interact with other entities
 	private class ARPGPlayerHandler implements ARPGInteractionVisitor {
+		//Passes through a Door
 		@Override
 		public void interactWith(Door door){
 			if (door instanceof CastleDoor) {
 				interactWith((CastleDoor)door);
-			} else {
+			} else if (door instanceof CaveDoor) {
+				interactWith((CaveDoor)door);
+			} else{
 				setIsPassingADoor(door);
 			}
 
 	    }
 		
+		//Opens a CastleDoor, and if open, passes through
 		@Override
 		public void interactWith(CastleDoor door) {
-			if (!door.isOpen()) {
+			if (!door.isOpen() && state == states.USINGCASTLEKEY) {
 				state = states.IDLE;
 				door.openDoor();
-			} else {
+			} else  if (state == states.IDLE) {
 				setIsPassingADoor(door);
 				door.closeDoor();
 			}
 		}
+		
+		//Passes through an open CaveDoor
+		@Override
+		public void interactWith(CaveDoor door) {
+			if (door.isOpen() && state == states.IDLE) {
+				setIsPassingADoor(door);
+			} 
+		}
+		
+		//Damages mobs vulnerable to physical damage
 		@Override
 		public void interactWith(ARPGMobs mob) {
 			if(isUsingSword > 7 && state == states.SWORDATTACK && mob.isVulnerablePhysical()) {
@@ -426,30 +471,57 @@ public class ARPGPlayer extends Player {
 			}
 		}
 		
+		//Slices grass if using the sword
 		@Override
 		public void interactWith(Grass grass) {
 			if (state == states.SWORDATTACK) grass.slice();
 		}
 		
+		//Makes a bomb explode if using the sword
 		@Override
 		public void interactWith(Bombs bomb) {
 			if (state == states.SWORDATTACK) bomb.setExplode();
 		}
 		
+		//Collects a coin
 		public void interactWith(Coin coin) {
 			inventory.addMoney(coin.getValue());
 			coin.collect();
 		}
 		
+		//Collects a heart
 		@Override
 		public void interactWith(Heart heart) {
 			if (strengthen(heart.getValue())) heart.collect();
 		}
 		
+		//Collects a castle key
 		@Override
 		public void interactWith(CastleKey key) {
 			key.collect();
 			inventory.addItem(key.getKey(), 1);
+		}
+		
+		//Collects a staff
+		@Override
+		public void interactWith(Staff staff) {
+			staff.collect();
+			inventory.addItem(staff.getStaff(), 1);
+		}
+		
+		//Collects a bow
+		@Override
+		public void interactWith(Bow bow) {
+			bow.collect();
+			inventory.addItem(bow.getBow(), 1);
+			inventory.addItem(ARPGItem.Arrow, 10);
+		}
+		
+		//Collects a bomb
+		@Override
+		public void interactWith(Bomb bomb) {
+			bomb.collect();
+			inventory.addItem(bomb.getBow(), 1);
 		}
 	}
 	

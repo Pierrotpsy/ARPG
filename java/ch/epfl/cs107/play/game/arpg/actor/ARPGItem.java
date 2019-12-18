@@ -8,7 +8,7 @@ public enum ARPGItem implements InventoryItem{
 	Staff("Staff", "zelda/staff_water.icon", 3f, 100),
 	Bow("Bow", "zelda/bow.icon", 3f, 30),
 	Bomb("Bomb", "zelda/bomb", 0.2f, 10),
-	CastleKey("Castle Key", "zelda/key", 0f, 500),;
+	CastleKey("Castle Key", "zelda/key", 0f, 500);
 	
 	private String name;
 	private String path;
@@ -22,22 +22,26 @@ public enum ARPGItem implements InventoryItem{
 		this.weight = weight;
 		this.price = price;
 	}
-
+	
+	//Getter for the name of an item
 	@Override
 	public String getName() {
 		return name;
 	}
-
+	
+	//Getter for the weight of an item
 	@Override
 	public float getWeight() {
 		return weight;
 	}
-
+	
+	//Getter for the price of an item
 	@Override
 	public int getPrice() {
 		return price;
 	}
 	
+	//Getter for the path of an item
 	@Override
 	public String getPath() {
 		return path;

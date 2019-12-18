@@ -16,10 +16,10 @@ import java.awt.*;
 public class Dialog implements Graphics {
 
     /// Static variables for positioning the text and the dialog window
-    private static final float FONT_SIZE = 0.6f;
+    private static final float FONT_SIZE = 0.5f;
 
     /// Number max of char per line of text
-    private static final int MAX_LINE_SIZE = 35;
+    private static final int MAX_LINE_SIZE = 45;
 
     /// Sprite and text graphics line
     private final ImageGraphics sprite;
@@ -48,7 +48,7 @@ public class Dialog implements Graphics {
 
         lines = new TextGraphics[3];
 
-        lines[0] = new TextGraphics("", FONT_SIZE, Color.BLACK, null, 0.0f, false, false, firstLineAnchor, TextAlign.Horizontal.LEFT, TextAlign.Vertical.MIDDLE,  1.0f, 3001);
+        lines[0] = new TextGraphics("", FONT_SIZE, Color.BLACK, null, 0.0f, false, false, firstLineAnchor, TextAlign.Horizontal.LEFT, TextAlign.Vertical.MIDDLE,  1f, 3001);
         lines[1] = new TextGraphics("", FONT_SIZE, Color.BLACK, null, 0.0f, false, false, secondLineAnchor, TextAlign.Horizontal.LEFT, TextAlign.Vertical.MIDDLE, 1.0f, 3001);
         lines[2] = new TextGraphics("", FONT_SIZE, Color.BLACK, null, 0.0f, false, false, thirdLineAnchor, TextAlign.Horizontal.LEFT, TextAlign.Vertical.MIDDLE, 1.0f, 3001);
 
