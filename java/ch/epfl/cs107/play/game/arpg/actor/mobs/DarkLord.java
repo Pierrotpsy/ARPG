@@ -259,7 +259,7 @@ public class DarkLord extends ARPGMobs{
 	}
 	
 	public void kill() {
-		isDying = 8;
+		isDying = 16;
 		isCellSpaceTaken = false;
 	}
 	

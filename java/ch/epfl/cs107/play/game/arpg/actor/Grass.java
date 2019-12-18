@@ -105,6 +105,7 @@ public class Grass extends AreaEntity {
 	}
 	
 	public void slice() {
+		slice = 16;
 		setTakeCellSpace();
 	}
 

@@ -29,7 +29,7 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	private static final int ANIMATION_DURATION = 8;
 	private final static double PROBABILITY_TO_MOVE = 0.2;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.4;
-	private final static int MAX_HP = 400;
+	private final static int MAX_HP = 40;
 	private float hp;
 	private boolean safety = false;
 	private int isDying = 0;
@@ -143,7 +143,7 @@ public class FlameSkull extends ARPGMobs implements FlyableEntity{
 	}
 	
 	public void kill() {
-		isDying = 8;
+		isDying = 16;
 		safety = true;
 	}
 	

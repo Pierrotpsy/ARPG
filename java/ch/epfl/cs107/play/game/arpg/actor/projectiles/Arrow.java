@@ -132,7 +132,6 @@ public class Arrow extends Projectile implements FlyableEntity{
 		@Override
 		public void interactWith(Grass grass) {
 			grass.slice();
-			end();
 		}
 		
 		@Override

@@ -229,7 +229,7 @@ public class LogMonster extends ARPGMobs{
 	}
 	
 	public void kill() {
-		isDying = 8;
+		isDying = 16;
 		isCellSpaceTaken = false;
 	}
 	
