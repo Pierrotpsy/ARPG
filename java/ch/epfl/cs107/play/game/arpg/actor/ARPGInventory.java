@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.cs107.play.game.actor.TextGraphics;
+import ch.epfl.cs107.play.game.areagame.actor.Animation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.game.rpg.inventory.Inventory;
@@ -15,11 +16,13 @@ import ch.epfl.cs107.play.math.TextAlign;
 import ch.epfl.cs107.play.window.Canvas;
 
 public class ARPGInventory extends Inventory {
+	private static final int ANIMATION_DURATION = 8;
 	private Map<ARPGItem, Integer> items = new HashMap<ARPGItem, Integer> ();
 	private int money;
 	private RPGSprite inventoryBackgroundSprite;
 	private ArrayList<ARPGItem> possessedItems = new ArrayList<ARPGItem>();
 	private Sprite[][] inventorySlotSprite = new RPGSprite[4][2];
+	private ArrayList<Animation> selectSlotAnimations = new ArrayList<Animation>();
 	private ArrayList<RPGSprite> gearSprite = new ArrayList<RPGSprite>();
 	private ARPGPlayer player;
 	private String weight = "Total weight " + Integer.toString(getOverallWeight());
@@ -30,14 +33,22 @@ public class ARPGInventory extends Inventory {
 		super(maxWeight);
 		money = initialMoney;
 		this.player = player;
-		items.put(ARPGItem.Arrow, 0);
-		items.put(ARPGItem.Bow, 0);
 		items.put(ARPGItem.Sword, 0);
 		items.put(ARPGItem.Bomb, 0);
+		items.put(ARPGItem.Bow, 0);
+		items.put(ARPGItem.Arrow, 0);
 		items.put(ARPGItem.Staff, 0);
 		items.put(ARPGItem.CastleKey, 0);
 		
 		inventoryBackgroundSprite = new RPGSprite("zelda/inventory.background", 9f, 9f, player, new RegionOfInterest(0, 0, 240, 240), new Vector(-4, -4), 1f, Float.MAX_VALUE);
+
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 2; ++j) {
+				Sprite[][] selectSprites = RPGSprite.extractSprites("zelda/inventory.selector", 2, 2, 2, player, 64, 64, new Vector(-3.25f + i*2, 1 - j*2), "horizontal");
+
+				selectSlotAnimations.add(RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, selectSprites, true)); 
+			}
+		}
 	}
 	
 	//Returns the money and the total value of the items stored in the inventory
@@ -123,7 +134,7 @@ public class ARPGInventory extends Inventory {
 		return items.get(item) > 0;
 	}
 	
-
+	
     public void updateDrawnItems() {
     	ARPGItem[] keySet = {ARPGItem.Arrow, ARPGItem.Bow, ARPGItem.Sword, ARPGItem.Bomb, ARPGItem.Staff, ARPGItem.CastleKey}; 
     	possessedItems.clear();
@@ -134,14 +145,18 @@ public class ARPGInventory extends Inventory {
     	}
     	updateItemIcons();
     }
-   //////////
+    
 	public void updateItemIcons() {
+		
 		int k = 0;
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 2; ++j) {
 				inventorySlotSprite[i][j] = new RPGSprite("zelda/inventory.slot", 1.5f, 1.5f, player, new RegionOfInterest(0, 0, 64, 64), new Vector((-3.25f + i*2), (1 - j*2)), 1f, Float.MAX_VALUE);
 			}
 		}
+		
+		System.out.println(selectSlotAnimations.size());		
+		
 		if (possessedItems.size() > 4) {
 			for (int i = 0; i < 4; i++) {
 				gearSprite.add(new RPGSprite(possessedItems.get(k).getPath(), 0.85f, 0.85f, player, new RegionOfInterest(0, 0, 16, 16), new Vector(-3 + i*2, 1.25f), 1f, Float.MAX_VALUE));
@@ -163,6 +178,7 @@ public class ARPGInventory extends Inventory {
 		title.setParent(this.player);
 		weightGraphics = new TextGraphics(weight, 0.5f, Color.BLACK, null, 1f, false, false, new Vector(-1, -3), TextAlign.Horizontal.CENTER, TextAlign.Vertical.BOTTOM, 1f, Float.MAX_VALUE);
 		weightGraphics.setParent(this.player);
+		
 	}
 	
 	public void draw(Canvas canvas) {
@@ -175,10 +191,18 @@ public class ARPGInventory extends Inventory {
 		
 		for (int i = 0; i < gearSprite.size(); ++i) {
 			gearSprite.get(i).draw(canvas);
-		}
+		} 
 	
-		
+		selectSlotAnimations.get(3).draw(canvas);
 		title.draw(canvas);
 		weightGraphics.draw(canvas);
+	}
+	
+	public ArrayList<Animation> getAnimations() {
+		return selectSlotAnimations;
+	}
+	
+	public ArrayList<ARPGItem> getPossessedItems() {
+		return possessedItems;
 	}
 }

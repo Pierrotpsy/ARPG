@@ -196,6 +196,10 @@ public class ARPGPlayer extends Player {
     
     //Updates the animation according to which animation needs to be displayed
     private void updateAnimations(float deltaTime) {	
+    	
+    	inventory.getAnimations().get(indexOf(usedItem)).update(deltaTime);
+    	
+
         switch(getOrientation()) {
         	case LEFT :
         		i = 3;
@@ -369,6 +373,13 @@ public class ARPGPlayer extends Player {
     	return inventory.isItemStocked(item);
 	}
     
+	private int indexOf(ARPGItem item) {
+		for (i = 0; i < inventory.getPossessedItems().size(); i++) {
+			if (item == inventory.getPossessedItems().get(i)) return i;
+		}
+		return 0;
+	}
+	
     private void swap() {
     	if (b) {
     		b = false;
