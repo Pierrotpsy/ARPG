@@ -1,18 +1,18 @@
 # ARPG
 
-##Modifications :
-####The following modifications were made for simplicity and ease of use :
+## Modifications :
+#### The following modifications were made for simplicity and ease of use :
 - Added new methods in DiscreteCoordinates to get neighbours in a certain radius, a certain number of coordinates in front of a coordinate, and all the coordinates in an arena. 
 - Added new methods in Animation to create a single animation and not 4 of them.
 - Added new methods in RPGSprites to extract sprites without having 4 versions of a character for each direction, simply works by entering if your sprites are vertical or horizontal.
 
-##Added classes and interfaces :
+## Added classes and interfaces :
 
-//Entities that have been added to be able to collect items and make entities fly
+### Entities that have been added to be able to collect items and make entities fly
  - CollectableAreaEntity
  - FlyableEntity
  
- //ARPG Classes
+### ARPG Classes
  - ARPG
  - ARPGBehavior
  - ARPGPlayerGUI
@@ -28,7 +28,7 @@
  - Heart
  - Staff
  
- //Immobile entities classes
+ ### Immobile entities classes
  - Bombs
  - Bridge
  - CastleDoor
@@ -36,7 +36,7 @@
  - Grass
  - Rock
  
- //Mob classes
+### Mob classes
  - ARPGMobs
  - Bomber
  - DarkLord
@@ -44,12 +44,12 @@
  - FlameSkull
  - LogMonster
  
- //Projectile classes
+### Projectile classes
  - Projectile
  - Arrow
  - MagicWaterProjectile
  
- //Areas
+### Areas
  - ARPGArea
  - Castle
  - CastleRoad
@@ -61,15 +61,15 @@
  - TempleRoad
  - Village
  
- //The ineteraction visitor for our ARPG
+### The ineteraction visitor for our ARPG
  - ARPGInteractionVisitor
  
- //A version of inventory and inventory item designed to work with an RPG type game
+### A version of inventory and inventory item designed to work with an RPG type game
  - Inventory
  - InventoryItem
 
 
-##Extensions :
+## Extensions :
 - HP Bar instead of hearts for player. The mobs also have hp bars.
 - Some Areas have been made spawnable, which makes random monsters appear at a certain rate in those areas.
 -  An inventory has been added, which can be accessed by pressing Q.
