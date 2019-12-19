@@ -70,14 +70,23 @@
 
 
 ## Extensions :
+### Added in every entity with hp :
 - HP Bar instead of hearts for player. The mobs also have hp bars.
+### Added as an interface in package arpg.areas
 - Some Areas have been made spawnable, which makes random monsters appear at a certain rate in those areas.
+### Added in ARPGInventory. The inventory contents are updtated via the player.
 -  An inventory has been added, which can be accessed by pressing Q.
+### Added in arpg.actor.immobile, simple entity with a sprite and that takes a cell space.
 - Rocks have been added, they can only be destroyed by a bomb.
+### Added in arpg.actor.immobile, simple entity with a sprite.
 - A bridge has been added, linking the Road to the TempleRoad.
+### Added in arpg.area
 - Three zones have been added to the game, the TempleRoad, the Temple and the Cave.
+### Added in arpg.actor.collectables
 - Unique collectable objects have been added in the temple (staff) and in the cave(bow and arrow).
+### Added in arpg.actor.immobile
 - The Cave is accessed via a CaveDoor, which can only be opened by detonating a bomb near it.
+### Added in arpg.actor.mobs
 - A new type of mob, the Bomber, has been added. It is immune to bomb explosions, and spawns bombs randomly, these bombs explode quicker than the player's.
 
  
