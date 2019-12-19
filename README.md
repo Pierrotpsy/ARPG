@@ -16,3 +16,7 @@
 - Access the cave to collect the bow and arrow
 - Make your way to the temple and collect the magic staff
 - Beat the Dark Lord and enter the castle
+
+## Differences with project guidelines :
+- The hp is displayed with a bar instead of hearts.
+- You can't force monsters to spawn by pressing a key, but random monsters will spawn in the Farm, the Road, the TempleRoad and the CastleRoad.
