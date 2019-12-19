@@ -1,9 +1,5 @@
 # ARPG
 
-les éventuelles modifications personnelles que vous avez apportées à l'architecture proposée en les justifiant;
-les classes/interfaces ajoutées et comment elles s'insèrent dans l'architecture;
-le comportement que vous attribuez à chacun des composants introduits (si le composant n'est pas demandé ou s'il l'est mais que son comportement est une petite variante de celui suggéré dans l'énoncé).
-
 ##Modifications :
 ####The following modifications were made for simplicity and ease of use :
 - Added new methods in DiscreteCoordinates to get neighbours in a certain radius, a certain number of coordinates in front of a coordinate, and all the coordinates in an arena. 
@@ -11,8 +7,12 @@ le comportement que vous attribuez à chacun des composants introduits (si le co
 - Added new methods in RPGSprites to extract sprites without having 4 versions of a character for each direction, simply works by entering if your sprites are vertical or horizontal.
 
 ##Added classes and interfaces :
+
+//Entities that have been added to be able to collect items and make entities fly
  - CollectableAreaEntity
  - FlyableEntity
+ 
+ //ARPG Classes
  - ARPG
  - ARPGBehavior
  - ARPGPlayerGUI
@@ -27,21 +27,29 @@ le comportement que vous attribuez à chacun des composants introduits (si le co
  - Coin
  - Heart
  - Staff
+ 
+ //Immobile entities classes
  - Bombs
  - Bridge
  - CastleDoor
  - CaveDoor
  - Grass
  - Rock
+ 
+ //Mob classes
  - ARPGMobs
  - Bomber
  - DarkLord
  - FireSpell
  - FlameSkull
  - LogMonster
+ 
+ //Projectile classes
  - Projectile
  - Arrow
  - MagicWaterProjectile
+ 
+ //Areas
  - ARPGArea
  - Castle
  - CastleRoad
@@ -52,7 +60,11 @@ le comportement que vous attribuez à chacun des composants introduits (si le co
  - Temple
  - TempleRoad
  - Village
+ 
+ //The ineteraction visitor for our ARPG
  - ARPGInteractionVisitor
+ 
+ //A version of inventory and inventory item designed to work with an RPG type game
  - Inventory
  - InventoryItem
 
