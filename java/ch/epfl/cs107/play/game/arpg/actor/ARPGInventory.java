@@ -20,7 +20,7 @@ public class ARPGInventory extends Inventory {
 	private RPGSprite inventoryBackgroundSprite;
 	private ArrayList<ARPGItem> possessedItems = new ArrayList<ARPGItem>();
 	private Sprite[][] inventorySlotSprite = new RPGSprite[4][2];
-	private Sprite[][] gearSprite = new RPGSprite[4][2];
+	private ArrayList<RPGSprite> gearSprite = new ArrayList<RPGSprite>();
 	private ARPGPlayer player;
 	private String weight = "Total weight " + Integer.toString(getOverallWeight());
 	private TextGraphics weightGraphics;
@@ -134,18 +134,30 @@ public class ARPGInventory extends Inventory {
     	}
     	updateItemIcons();
     }
-	
+   //////////
 	public void updateItemIcons() {
 		int k = 0;
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 2; ++j) {
 				inventorySlotSprite[i][j] = new RPGSprite("zelda/inventory.slot", 1.5f, 1.5f, player, new RegionOfInterest(0, 0, 64, 64), new Vector((-3.25f + i*2), (1 - j*2)), 1f, Float.MAX_VALUE);
-				if(k < possessedItems.size()) {
-					gearSprite[i][j] = new RPGSprite(possessedItems.get(k).getPath(), 0.85f, 0.85f, player, new RegionOfInterest(0, 0, 16, 16), new Vector((-3 + i*2), (1.25f - j*2)), 1f, Float.MAX_VALUE);
-					++k;
-				}
 			}
 		}
+		if (possessedItems.size() > 4) {
+			for (int i = 0; i < 4; i++) {
+				gearSprite.add(new RPGSprite(possessedItems.get(k).getPath(), 0.85f, 0.85f, player, new RegionOfInterest(0, 0, 16, 16), new Vector(-3 + i*2, 1.25f), 1f, Float.MAX_VALUE));
+				k++;
+			}
+			for (int i = 0; i < possessedItems.size() - 4; i++) {
+				gearSprite.add(new RPGSprite(possessedItems.get(k).getPath(), 0.85f, 0.85f, player, new RegionOfInterest(0, 0, 16, 16), new Vector(-3 + i*2, 1.25f - 2), 1f, Float.MAX_VALUE));
+				k++;
+			}
+		} else {
+			for (int i = 0; i < possessedItems.size(); i++) {
+				gearSprite.add(new RPGSprite(possessedItems.get(k).getPath(), 0.85f, 0.85f, player, new RegionOfInterest(0, 0, 16, 16), new Vector(-3 + i*2, 1.25f), 1f, Float.MAX_VALUE));
+				k++;
+			}
+		}
+		
 		
 		title = new TextGraphics("INVENTORY", 0.75f, Color.BLACK, null, 1f, false, false, new Vector(1, 4), TextAlign.Horizontal.CENTER, TextAlign.Vertical.TOP, 1f, Float.MAX_VALUE);
 		title.setParent(this.player);
@@ -161,10 +173,8 @@ public class ARPGInventory extends Inventory {
 			}
 		}
 		
-		for (int i = 0; i < possessedItems.size()/2; ++i) {
-			for (int j = 0; j < 2; ++j) {
-				gearSprite[i][j].draw(canvas);
-			}
+		for (int i = 0; i < gearSprite.size(); ++i) {
+			gearSprite.get(i).draw(canvas);
 		}
 	
 		
