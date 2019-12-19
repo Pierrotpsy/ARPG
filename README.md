@@ -4,6 +4,8 @@
 ## How to launch :
 - Simply launch ch.epfl.cs107.play.Play.
 
+- If you want to play the game progressively, go into arpg.Test before, to make sure that MODE = false, if MODE is true, then all items will be given to the player from the start of the game.
+
 ## Controls :
 - Arrows = moving (UP, DOWN, RIGHT, LEFT)
 - Space = use the currently equipped item

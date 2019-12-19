@@ -74,7 +74,6 @@ public class ARPGPlayer extends Player {
     private int isUsingStaff = 0;
     private int isUsingBow = 0;
     
-	private Dialog d;
 	private boolean b = false;
 	//States of the player
 	private states state;
@@ -166,9 +165,7 @@ public class ARPGPlayer extends Player {
 		if (q.isPressed()) {
 			swap();
 		}
-		
-		d = new Dialog(XMLTexts.getText("rock_interaction"), "dialog", getOwnerArea());
-		
+				
 		if (state == states.IDLE && regenCooldown > 0) {
 			regenCooldown--;
 		} else if (state != states.IDLE) regenCooldown = REGEN_COOLDOWN;
@@ -268,7 +265,6 @@ public class ARPGPlayer extends Player {
 	@Override
 	public void draw(Canvas canvas) {
 		GUI.draw(canvas);
-		//if (d != null) d.draw(canvas);
 
 		if(isUsingSword > 0) {
 			swordAnimations[j].draw(canvas);
