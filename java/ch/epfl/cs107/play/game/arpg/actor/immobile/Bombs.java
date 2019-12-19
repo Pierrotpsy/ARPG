@@ -1,4 +1,4 @@
-package ch.epfl.cs107.play.game.arpg.actor;
+package ch.epfl.cs107.play.game.arpg.actor.immobile;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,12 +12,11 @@ import ch.epfl.cs107.play.game.areagame.actor.Interactor;
 import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
+import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Bomb;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Bow;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Staff;
-import ch.epfl.cs107.play.game.arpg.actor.immobile.CaveDoor;
-import ch.epfl.cs107.play.game.arpg.actor.immobile.Rock;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.Bomber;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;

@@ -15,9 +15,9 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
-import ch.epfl.cs107.play.game.arpg.actor.Bombs;
-import ch.epfl.cs107.play.game.arpg.actor.Grass;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Bomb;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Bombs;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Grass;
 import ch.epfl.cs107.play.game.arpg.actor.mobs.ARPGMobs.ARPGMobHandler;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
@@ -260,7 +260,7 @@ public class Bomber extends ARPGMobs {
 
 	@Override
 	public boolean isCellInteractable() {
-		return false;
+		return true;
 	}
 
 	@Override

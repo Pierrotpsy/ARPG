@@ -13,9 +13,9 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
-import ch.epfl.cs107.play.game.arpg.actor.Bombs;
-import ch.epfl.cs107.play.game.arpg.actor.Grass;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.ARPGCollectableAreaEntity;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Bombs;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Grass;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -25,8 +25,8 @@ import ch.epfl.cs107.play.window.Canvas;
 public class FireSpell extends AreaEntity implements Interactor {
 	//Constants
 	private final static int ANIMATION_DURATION = 8;
-	private final static int MIN_LIFETIME = 100;
-	private final static int MAX_LIFETIME = 200;
+	private final static int MIN_LIFETIME = 50;
+	private final static int MAX_LIFETIME = 100;
 	private final static int PROPAGATION_TIME_FIRE = 6;
 	
 	private int force;

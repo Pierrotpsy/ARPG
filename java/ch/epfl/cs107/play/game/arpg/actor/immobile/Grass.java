@@ -1,4 +1,4 @@
-package ch.epfl.cs107.play.game.arpg.actor;
+package ch.epfl.cs107.play.game.arpg.actor.immobile;
 
 import java.util.Collections;
 import java.util.List;

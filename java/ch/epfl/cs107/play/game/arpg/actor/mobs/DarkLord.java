@@ -13,10 +13,10 @@ import ch.epfl.cs107.play.game.areagame.actor.Orientation;
 import ch.epfl.cs107.play.game.areagame.actor.Sprite;
 import ch.epfl.cs107.play.game.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.game.arpg.actor.ARPGPlayer;
-import ch.epfl.cs107.play.game.arpg.actor.Bombs;
-import ch.epfl.cs107.play.game.arpg.actor.Grass;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.CastleKey;
 import ch.epfl.cs107.play.game.arpg.actor.collectables.Coin;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Bombs;
+import ch.epfl.cs107.play.game.arpg.actor.immobile.Grass;
 import ch.epfl.cs107.play.game.arpg.handler.ARPGInteractionVisitor;
 import ch.epfl.cs107.play.game.rpg.actor.RPGSprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -34,7 +34,7 @@ public class DarkLord extends ARPGMobs{
 	private final static int MIN_SPELL_WAIT_DURATION = 120;
 	private final static double PROBABILITY_TO_MOVE = 0.1;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.3;
-	private final static int MAX_HP = 200;
+	private final static int MAX_HP = 300;
 	private final static int TELEPORTATION_COOLDOWN = 10;
 	
 	

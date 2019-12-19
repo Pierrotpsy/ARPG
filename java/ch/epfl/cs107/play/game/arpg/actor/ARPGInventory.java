@@ -45,8 +45,9 @@ public class ARPGInventory extends Inventory {
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 2; ++j) {
 				Sprite[][] selectSprites = RPGSprite.extractSprites("zelda/inventory.selector", 2, 2, 2, player, 64, 64, new Vector(-3.25f + i*2, 1 - j*2), "horizontal");
-
-				selectSlotAnimations.add(RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, selectSprites, true)); 
+				Animation a = RPGSprite.createSingleAnimation(ANIMATION_DURATION/2, selectSprites, true);
+				
+				selectSlotAnimations.add(a); 
 			}
 		}
 	}
@@ -155,7 +156,6 @@ public class ARPGInventory extends Inventory {
 			}
 		}
 		
-		System.out.println(selectSlotAnimations.size());		
 		
 		if (possessedItems.size() > 4) {
 			for (int i = 0; i < 4; i++) {
