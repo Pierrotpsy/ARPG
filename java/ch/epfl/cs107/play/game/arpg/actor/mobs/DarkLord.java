@@ -34,7 +34,7 @@ public class DarkLord extends ARPGMobs{
 	private final static int MIN_SPELL_WAIT_DURATION = 120;
 	private final static double PROBABILITY_TO_MOVE = 0.1;
 	private final static double PROBABILITY_TO_CHANGE_DIRECTION = 0.3;
-	private final static int MAX_HP = 300;
+	private final static int MAX_HP = 50;
 	private final static int TELEPORTATION_COOLDOWN = 10;
 	
 	
